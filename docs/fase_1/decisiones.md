@@ -4,15 +4,22 @@ Registro para no repetir debates. Actualizar solo si cambia una decisión.
 
 | Decisión | Valor | Fecha |
 |----------|--------|-------|
-| Alcance | Fase 1 completa: Orchestrator enruta + Developer/Business responde | 2026-08-05 |
+| Alcance | Orchestrator documenta (brief) + delega a Frontend o Backend | 2026-08-09 |
 | LLM | Groq (`LLM_PROVIDER=groq`) | 2026-08-05 |
 | Cliente | SDK oficial `groq` (`from groq import Groq`) | 2026-08-05 |
 | Modelo por defecto | `llama-3.3-70b-versatile` | 2026-08-05 |
-| Agentes | `orchestrator`, `developer`, `business` | 2026-08-05 |
-| Respuesta API | `{ routed_to, reply, reason }` (`reason` para depurar) | 2026-08-05 |
-| Fallback de ruta | Si el JSON del Orchestrator falla → `business` | 2026-08-05 |
+| Agentes | `orchestrator`, `frontend`, `backend` | 2026-08-09 |
+| Respuesta API | `{ routed_to, documentation, reply, reason }` | 2026-08-09 |
+| Fallback de ruta | Si el JSON del Orchestrator falla → `backend` | 2026-08-09 |
+| Full-stack | Elegir foco principal; no llamar FE+BE en el mismo request (aún) | 2026-08-09 |
 | Pruebas | `pytest` en `tests/` con LLM mockeado; Swagger/curl para prueba real | 2026-08-05 |
 | Secrets | `.env` local (gitignored); plantilla en `.env.example` | 2026-08-05 |
+
+## Deuda: código vs documentación
+
+La documentación ya describe `orchestrator` + `frontend` + `backend`.
+
+El código actual del MVP **aún** usa `developer` / `business` (prompts y rutas antiguas). Pendiente realinear `agents/`, `api/orchestrate.py`, `api/main.py` y `tests/` con este modelo.
 
 ## Cómo arrancar
 
@@ -26,4 +33,4 @@ pytest
 ```
 
 - API docs: http://127.0.0.1:8000/docs
-- Contrato: [api.md](api.md)
+- Contrato objetivo: [api.md](api.md)

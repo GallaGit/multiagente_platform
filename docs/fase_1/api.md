@@ -8,13 +8,13 @@ Proveedor por defecto: **Groq**. Ver [decisiones.md](decisiones.md).
 
 ### `POST /chat`
 
-Clasifica el mensaje y responde con el agente elegido.
+El Orchestrator documenta la petición y delega la implementación a `frontend` o `backend`.
 
 **Request**
 
 ```json
 {
-  "message": "Necesito estimar una API REST en FastAPI para un CRM"
+  "message": "Necesito una API REST en FastAPI para un CRM"
 }
 ```
 
@@ -26,16 +26,18 @@ Clasifica el mensaje y responde con el agente elegido.
 
 ```json
 {
-  "routed_to": "developer",
-  "reply": "Para una API REST de CRM en FastAPI...",
-  "reason": "Petición técnica de API y estimación"
+  "routed_to": "backend",
+  "documentation": "Objetivo: API REST CRM. Alcance: CRUD clientes. Entregables: endpoints y modelos.",
+  "reply": "Propongo FastAPI con routers de clientes, Pydantic models...",
+  "reason": "Petición centrada en API y servidor"
 }
 ```
 
 | Campo | Tipo | Descripción |
 |-------|------|-------------|
-| `routed_to` | string | `developer` o `business` |
-| `reply` | string | Respuesta del agente elegido |
+| `routed_to` | string | `frontend` o `backend` |
+| `documentation` | string | Brief del Orchestrator |
+| `reply` | string | Respuesta de implementación del agente elegido |
 | `reason` | string | Motivo del Orchestrator (depuración) |
 
 **Errores mínimos**
@@ -58,16 +60,16 @@ Plantilla: `.env.example`. No commitear `.env`.
 ## Comportamiento esperado
 
 1. Validar `message`.
-2. Llamar Orchestrator → obtener `agent` (+ `reason`).
-3. Llamar al agente → obtener `reply`.
-4. Devolver `{ "routed_to", "reply", "reason" }`.
+2. Llamar Orchestrator → obtener `agent`, `reason`, `brief`.
+3. Llamar al agente elegido con mensaje + `brief` → obtener `reply`.
+4. Devolver `{ "routed_to", "documentation", "reply", "reason" }` (`documentation` = `brief`).
 
 ## Ejemplo de prueba manual
 
 ```bash
 curl -X POST http://127.0.0.1:8000/chat \
   -H "Content-Type: application/json" \
-  -d "{\"message\": \"Prepara una propuesta para una clínica que quiere una web\"}"
+  -d "{\"message\": \"Diseña una pantalla de login con React\"}"
 ```
 
-Esperado: `routed_to` ≈ `business`.
+Esperado: `routed_to` ≈ `frontend`, con `documentation` no vacía.

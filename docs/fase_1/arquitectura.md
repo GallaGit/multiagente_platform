@@ -6,20 +6,21 @@
 flowchart TD
   User -->|POST /chat| API
   API --> Orchestrator
-  Orchestrator -->|route developer| Developer
-  Orchestrator -->|route business| Business
-  Developer --> API
-  Business --> API
+  Orchestrator -->|"brief + route"| Router
+  Router -->|frontend| Frontend
+  Router -->|backend| Backend
+  Frontend --> API
+  Backend --> API
   API --> User
 ```
 
 1. El usuario envía un mensaje a la API.
 2. La API carga el prompt del Orchestrator y llama al LLM.
-3. El Orchestrator responde con el agente destino (`developer` o `business`) y un motivo.
-4. La API carga el prompt de ese agente, le pasa el mensaje original y obtiene la respuesta.
-5. La API devuelve `routed_to` + `reply`.
+3. El Orchestrator responde con JSON: `agent` (`frontend`|`backend`), `reason` y `brief` (documentación).
+4. La API carga el prompt del agente elegido, le pasa el mensaje **y** el `brief`, y obtiene la respuesta de implementación.
+5. La API devuelve `routed_to`, `documentation` (= `brief`), `reply` y `reason`.
 
-No hay bucles, memoria ni herramientas en esta fase: un mensaje → una ruta → una respuesta.
+No hay bucles, memoria ni herramientas en esta fase: un mensaje → documentar + una ruta → una respuesta de implementación.
 
 ## Mapa de carpetas
 
@@ -31,13 +32,13 @@ Convención: cada agente es una carpeta con un `system.md` (prompt). Sin framewo
 agents/
 ├── orchestrator/
 │   └── system.md
-├── developer/
+├── frontend/
 │   └── system.md
-└── business/
+└── backend/
     └── system.md
 
 api/                  # FastAPI: endpoint /chat y cliente LLM
-tests/                # prueba manual o script mínimo (opcional en Fase 1)
+tests/
 docs/
 ├── roadmap/
 │   └── fase_1.md
@@ -46,8 +47,8 @@ docs/
 
 Notas:
 
-- En el árbol completo del roadmap existen `sales`, `marketing`, etc. En Fase 1 usamos **`business/`** como rol unificado.
-- `knowledge/`, `memory/`, `tools/` y `workflows/` ya pueden existir en la raíz; el MVP de Fase 1 no los usa todavía.
+- En el árbol amplio del repo pueden existir `sales`, `marketing`, `developer`, etc. El MVP documentado usa **`orchestrator`**, **`frontend`** y **`backend`**.
+- `knowledge/`, `memory/`, `tools/` y `workflows/` pueden existir en la raíz; el MVP de Fase 1 no los usa todavía.
 
 ## Capas mínimas de código
 
@@ -55,9 +56,9 @@ Notas:
 |-------|-----------------|
 | Carga de prompts | Leer `agents/<nombre>/system.md` |
 | Cliente LLM | Una función: system + user → texto |
-| Router | Orchestrator → parsear JSON → elegir agente |
-| API | `POST /chat` orquesta los dos pasos |
+| Router | Orchestrator → parsear JSON (`agent`, `brief`) → elegir agente |
+| API | `POST /chat` orquesta documentar + implementar |
 
 ## Límite de complejidad
 
-Si el flujo necesita “si A entonces Developer, si responde X entonces Finance…”, aún no es Fase 1: eso es orquestación con estados (más adelante, LangGraph cuando haga falta).
+Si el flujo necesita “documentar → Frontend → Backend → unir respuesta”, aún no es este MVP: eso es orquestación multi-paso (más adelante, LangGraph cuando haga falta).

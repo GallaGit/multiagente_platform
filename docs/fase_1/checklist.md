@@ -1,11 +1,13 @@
 # Checklist de implementación — Fase 1
 
-Orden recomendado. Marca cada paso al completarlo.
+Orden recomendado. Modelo objetivo: Orchestrator (documenta) + Frontend + Backend.
+Ver [decisiones.md](decisiones.md) (incluye deuda de código).
 
 ## 1. Estructura de agentes
 
-- [x] En la raíz del repo: crear `agents/orchestrator/`, `agents/developer/`, `agents/business/`
-- [x] Añadir `system.md` en cada una (plantillas en [agentes.md](agentes.md))
+- [ ] En la raíz: `agents/orchestrator/`, `agents/frontend/`, `agents/backend/`
+- [ ] `system.md` en cada una (plantillas en [agentes.md](agentes.md))
+- [x] ~~Versión antigua~~ `developer` / `business` (código legacy; realinear o retirar)
 
 ## 2. Carga de prompts
 
@@ -18,24 +20,27 @@ Orden recomendado. Marca cada paso al completarlo.
 - [x] Función mínima: `(system: str, user: str) -> str`
 - [x] Groq vía SDK oficial `groq` ([decisiones.md](decisiones.md))
 
-## 4. Orchestrator → route → agente
+## 4. Orchestrator → documentar + route → agente
 
-- [x] Llamar Orchestrator con el mensaje del usuario
-- [x] Parsear JSON `{ "agent", "reason" }`
-- [x] Validar `agent` ∈ `{developer, business}` (con fallback si falla)
-- [x] Llamar al agente elegido con el mismo mensaje
-- [x] Devolver `routed_to` + `reply` (+ `reason`)
+- [ ] Llamar Orchestrator con el mensaje del usuario
+- [ ] Parsear JSON `{ "agent", "reason", "brief" }`
+- [ ] Validar `agent` ∈ `{frontend, backend}` (fallback → `backend`)
+- [ ] Llamar al agente elegido con mensaje + `brief`
+- [ ] Devolver `routed_to` + `documentation` + `reply` + `reason`
+- [x] ~~Versión antigua~~ route a `developer`/`business` sin `brief` (pendiente reemplazar)
 
 ## 5. FastAPI `/chat`
 
-- [x] App FastAPI con `POST /chat` según [api.md](api.md)
+- [x] App FastAPI con `POST /chat` (base existente)
+- [ ] Alinear contrato a [api.md](api.md) (`documentation`, rutas FE/BE)
 - [x] Validar body (`message` no vacío)
-- [ ] Arrancar servidor local y comprobar health/respuesta (manual)
+- [ ] Arrancar servidor local y comprobar respuesta (manual)
 
 ## 6. Prueba de aceptación
 
-- [x] Test con mock: mensaje técnico → `developer`
-- [x] Test con mock: mensaje comercial → `business`
+- [ ] Test con mock: mensaje UI → `frontend` (+ `documentation`)
+- [ ] Test con mock: mensaje API → `backend` (+ `documentation`)
 - [ ] Prueba real con Groq (curl o `/docs`) cuando haya `LLM_API_KEY`
+- [x] ~~Tests antiguos~~ `developer` / `business` (actualizar al realinear código)
 
-Cuando los bloques de código estén hechos, Fase 1 está implementada. Siguiente: separar knowledge (Fase 2 del [roadmap](../roadmap/fase_1.md)).
+Cuando el código esté realineado con esta guía, Fase 1 queda cerrada en el nuevo modelo. Siguiente: knowledge (Fase 2 del [roadmap](../roadmap/fase_1.md)).

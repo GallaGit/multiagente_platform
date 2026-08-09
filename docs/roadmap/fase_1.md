@@ -8,24 +8,22 @@ No empieces con diez agentes.
 
 Empieza con uno llamado:
 
-**CEO Orchestrator**
+**Orchestrator**
 
-Este agente no hace trabajo técnico. Solo decide quién debe hacer cada tarea.
+Este agente documenta la petición (brief) y delega la implementación. No implementa UI ni API.
 
-Ejemplo:
+Ejemplo (MVP actual):
 
 ```
 Usuario
     │
     ▼
-CEO Orchestrator
+Orchestrator (documenta + elige)
     │
  ┌──┴─────────────┐
  │                │
-Developer Agent
-Sales Agent
-Marketing Agent
-Finance Agent
+Frontend Agent
+Backend Agent
 ```
 
 En esta fase los agentes pueden ser simplemente prompts.
@@ -324,12 +322,12 @@ Observa que **`knowledge`** está separado de **`agents`**. Eso es lo que te per
 
 Conociendo tu forma de aprender y tus objetivos, construiría este proyecto como un **proyecto académico y de largo plazo**, no como un producto terminado desde el primer día. Cada etapa te enseñará una tecnología útil para tu carrera (FastAPI, IA, bases de datos, APIs, automatización y arquitectura de software), y al final tendrás un sistema que podrás adaptar a distintos negocios.
 
-Empezaría con un objetivo muy concreto: **un orquestador y solo tres agentes**:
+Empezaría con un objetivo muy concreto: **tres agentes especializados en entrega de software**:
 
-1. **Orchestrator**: recibe la petición y decide quién debe actuar.
-2. **Developer**: analiza requisitos, arquitectura y código.
-3. **Business**: se ocupa de clientes, propuestas y organización.
+1. **Orchestrator**: documenta la petición (brief) y delega la implementación.
+2. **Frontend**: implementa (en texto) UI, componentes y UX.
+3. **Backend**: implementa (en texto) API, datos y lógica de servidor.
 
-Cuando ese sistema funcione de forma estable, añadiría el resto de agentes (finanzas, marketing, legal, soporte, etc.). Así cada nueva incorporación se hace sobre una base sólida en lugar de aumentar la complejidad desde el principio.
+Cuando ese sistema funcione de forma estable, se pueden añadir más roles (finanzas, marketing, legal, soporte, etc.). Así cada nueva incorporación se hace sobre una base sólida en lugar de aumentar la complejidad desde el principio.
 
 Guía de implementación del MVP: [docs/fase_1/](../fase_1/README.md).

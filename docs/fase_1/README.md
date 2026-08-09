@@ -6,17 +6,17 @@ Las rutas de esta guía son relativas a la **raíz del repositorio** (`agents/`,
 
 ## Objetivo
 
-Clasificar una petición del usuario y responder con el agente correcto (`developer` o `business`).
+Documentar la petición (brief) y delegar la implementación al agente correcto (`frontend` o `backend`).
 
 ## Agentes del MVP
 
 | Agente | Rol |
 |--------|-----|
-| **Orchestrator** | Recibe la petición y decide a quién enrutar |
-| **Developer** | Requisitos, arquitectura y código |
-| **Business** | Clientes, propuestas y organización |
+| **Orchestrator** | Recibe la petición, redacta documentación breve y elige quién implementa |
+| **Frontend** | Implementación UI (HTML/CSS/JS, React, UX de pantallas) |
+| **Backend** | Implementación API, datos, auth, lógica de servidor |
 
-`Business` unifica sales/marketing/org en esta fase. No se implementan finance, legal ni support todavía.
+El Orchestrator no implementa código: documenta y delega. Ante una petición full-stack, elige el foco principal (`frontend` o `backend`); llamar a ambos queda para más adelante.
 
 ## Stack
 
@@ -25,32 +25,32 @@ Clasificar una petición del usuario y responder con el agente correcto (`develo
 - Groq (ver [decisiones.md](decisiones.md))
 - Solo prompts (sin LangGraph, CrewAI ni AutoGen)
 
-Sin frontend. Sin SQLite todavía.
+Sin frontend de producto en este MVP. Sin SQLite todavía.
 
 ## Qué entra
 
 - Tres agentes como prompts en archivos `system.md`
 - Un endpoint `POST /chat`
-- Enrutado Orchestrator → Developer | Business
-- Respuesta del agente elegido
+- Orchestrator → `brief` + ruta → Frontend | Backend
+- Respuesta con documentación + implementación del agente elegido
 
 ## Qué no entra (fases posteriores)
 
 - Knowledge separado por nicho
 - Herramientas (GitHub, Gmail, CRM, etc.)
 - Memoria persistente
-- Orquestación multi-paso con estados
+- Orquestación multi-paso / FE+BE en el mismo request
 - Automatizaciones (n8n)
 
 ## Criterios de hecho
 
 1. `POST /chat` acepta `{ "message": "..." }`.
-2. El Orchestrator elige `developer` o `business`.
-3. Ese agente genera la respuesta.
-4. La API devuelve `{ "routed_to": "...", "reply": "...", "reason": "..." }`.
-5. `pytest` (LLM mockeado) y/o prueba manual con curl/Swagger pasan con:
-   - un mensaje técnico → `developer`
-   - un mensaje comercial → `business`
+2. El Orchestrator produce `brief` (documentación) y elige `frontend` o `backend`.
+3. Ese agente genera la respuesta de implementación (usando el mensaje y el `brief`).
+4. La API devuelve `{ "routed_to", "documentation", "reply", "reason" }`.
+5. Pruebas (mock y/o manual) pasan con:
+   - mensaje de UI → `frontend`
+   - mensaje de API/servidor → `backend`
 
 ## Documentos de esta carpeta
 

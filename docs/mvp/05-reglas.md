@@ -26,9 +26,12 @@ Opciones (elegir una por piloto):
 
 | Modo | Cuándo |
 |---|---|
-| Round-robin entre agentes activos | Equipo homogéneo |
-| Por zona / cartera de inmuebles | Si el CRM ya segmenta así |
-| Cola única a responsable de 1ª respuesta | Equipos pequeños |
+| Round-robin entre agentes activos | Solo si el CRM/API lo permite; en Witei MVP **no** asumir API |
+| Por zona / cartera de inmuebles | Compatible con regla nativa “responsable del inmueble” (Smart Inbox) |
+| Coordinador / Delegado / admin | Alinear con [orden nativo Witei](08-prueba-tecnica-witei.md) |
+| Cola única a responsable de 1ª respuesta | Equipos pequeños; configurar Coordinador en Witei |
+
+En Witei sin API Clientes: **diseñar el reparto compatible con reglas nativas**; complementar con alertas si hace falta reasignación post-SLA.
 
 - Fuera de horario laboral: acumular y asignar al abrir; o guardar en cola `nuevo` hasta apertura (definir con cliente).
 - No asignar a usuarios inactivos / de vacaciones (lista mantenida por el cliente).

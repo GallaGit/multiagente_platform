@@ -44,7 +44,8 @@ Cifras orientativas; el contrato comercial las fija por cliente. Sin acceso API 
 ## Stack fijado en este brief
 
 - CRM: **Witei**
-- Canal: **uno** (portal→email/webhook **o** formulario web)
-- Motor: **n8n o Make** + configuración CRM
+- Canal: **uno** (portal→Smart Inbox **o** formulario→email formato Smart Inbox)
+- Motor: **Smart Inbox** + reglas nativas; iPaaS opcional como generador de email
+- Evidencia: [08-prueba-tecnica-witei.md](08-prueba-tecnica-witei.md)
 
-Variante Inmovilla: mismo alcance funcional; otra ficha de integración ([04-integraciones.md](04-integraciones.md)).
+Variante Inmovilla: mismo alcance funcional; otra prueba de integración.

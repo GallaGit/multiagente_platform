@@ -18,9 +18,10 @@ Que cada lead del alcance quede en el CRM con **origen**, **responsable**, **SLA
 |---|---|
 | CRM | **Witei** |
 | Canal | **1** entrada: lead de portal (email/webhook) **o** formulario web |
-| Implantación | **n8n o Make** + reglas/campos en CRM |
-| Código propio | Solo si el conector no basta |
-| Variante documentada | Inmovilla (mismo flujo; otra API) — no es el alcance del primer piloto |
+| Implantación | **Smart Inbox** (email) + reglas nativas Witei; **n8n/Make/Zapier** solo para generar/reenviar el email |
+| Código propio | Solo normalizador/receptor si hace falta |
+| Variante documentada | Inmovilla (otra prueba técnica) — no es el alcance del primer piloto |
+| Prueba técnica | [08-prueba-tecnica-witei.md](08-prueba-tecnica-witei.md) — **GO condicionado** (Smart Inbox; no REST inmediato) |
 
 ## Qué no es este MVP
 
@@ -41,9 +42,10 @@ Que cada lead del alcance quede en el CRM con **origen**, **responsable**, **SLA
 | [05-reglas.md](05-reglas.md) | Dedupe, reparto, SLA, cola |
 | [06-metricas.md](06-metricas.md) | Baseline y antes/después |
 | [07-criterios-hecho.md](07-criterios-hecho.md) | Cuándo el piloto “funcionó” |
+| [08-prueba-tecnica-witei.md](08-prueba-tecnica-witei.md) | Resultado go/no-go Witei + canal |
 
 ## Estado
 
-Spec técnica **redactada**. Pruebas reales de API y piloto pagado: **pendientes**. Donde falte evidencia de fabricante, se marca *pendiente de prueba técnica* (no se inventan endpoints).
+Spec técnica **redactada**. Prueba de escritorio Witei **cerrada** (GO condicionado vía Smart Inbox). Prueba en cuenta real y piloto pagado: **pendientes**.
 
 Norte del negocio: [docs/README.md](../README.md).

@@ -49,6 +49,6 @@ Detalle: [roadmap de producto](roadmap/producto.md).
 
 ## Siguiente paso
 
-1. Prueba técnica real Witei + canal ([mvp/04-integraciones.md](mvp/04-integraciones.md)).
+1. Prueba en **cuenta real** Witei (checklist en [mvp/08-prueba-tecnica-witei.md](mvp/08-prueba-tecnica-witei.md)).
 2. Discovery comercial ([plan 90 días](Orquestacion-Leads-Agencias/Estrategia-Comercial/06-Plan-comercial-90-dias.md)).
 3. Plataforma interna solo cuando el sprint genere trabajo repetible.

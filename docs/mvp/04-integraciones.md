@@ -1,76 +1,83 @@
 # 04 — Integraciones
 
-Stack de referencia: **Witei** + **1 canal** + **n8n o Make**.  
-No se inventan endpoints: lo no verificado en prueba queda marcado.
+Stack de referencia: **Witei** + **1 canal** + **Smart Inbox** (email) + **n8n/Make/Zapier** como generador/reenviador.  
+Prueba técnica de escritorio: [08-prueba-tecnica-witei.md](08-prueba-tecnica-witei.md) (2026-08-12).
 
-## Arquitectura de implantación
+## Arquitectura de implantación (post-prueba)
 
 ```text
-Canal (portal email/webhook | form web)
+Canal (portal email | form web)
         ↓
-n8n / Make  (normalizar, dedupe ligera, reintentos)
+n8n / Make / Zapier  (opcional: normalizar → email formato Smart Inbox)
         ↓
-Witei (alta/update, dueño, tarea/nota, estados)
+Witei Smart Inbox  (*@inbox.witei.com)
         ↓
-Alertas (email/Slack/CRM) ← excepciones
+Contacto + asignación nativa + tarea "Solicitud de Contacto"
+        ↓
+Vistas CRM + alertas humanas (excepciones / SLA)
 ```
 
-Código propio (FastAPI u otro) solo si iPaaS no cubre auth, transformaciones o límites.
+**API Clientes Witei:** no disponible de inmediato (solicitud 2–3 semanas; experimental). No es dependencia del primer piloto.  
+Código propio solo si hace falta un endpoint receptor o normalizador de emails/payloads.
 
 ## CRM — Witei (referencia)
 
-| Tema | Estado |
+| Tema | Estado tras prueba |
 |---|---|
-| Rol | Sistema de registro del lead en el MVP |
-| Mecanismos esperados | API y/o automatizaciones nativas / webhooks — **pendiente de prueba técnica** por plan y permisos |
-| Necesidades del sprint | Crear/actualizar contacto-demanda; asignar usuario; registrar nota/tarea/siguiente acción; filtrar por estado/origen |
-| Riesgos | Campos custom limitados; rate limits; planes freemium vs pago; export/lock-in |
+| Rol | Sistema de registro del lead |
+| Mecanismo MVP | **Smart Inbox** (email), no REST público abierto |
+| API Clientes | Bajo petición; token por usuario; docs en cuenta; experimental |
+| Webhooks oficiales | Salientes de **inmuebles**, no ingest de leads |
+| Necesidades del sprint | Alta contacto + dueño (reglas nativas) + tarea solicitud; SLA/cola vía proceso + vistas |
+| Riesgos | Parseo email frágil; límites de contactos del plan; sin listados REST verificados; API experimental |
 
 ### Checklist de prueba técnica (Witei)
 
-- [ ] Auth (token/OAuth) documentada y usable en sandbox o cuenta piloto
-- [ ] Crear lead/contacto con origen y datos mínimos
-- [ ] Asignar responsable
-- [ ] Crear tarea o equivalente a siguiente acción + fecha
-- [ ] Leer/listar leads filtrados (para panel/métricas)
-- [ ] Webhook o polling viable para eventos nuevos
-- [ ] Límites de rate y campos obligatorios del plan del cliente
-- [ ] Exportación / salida documentada (portabilidad)
+- [x] Auth documentada — **sí**, pero API Clientes no inmediata (2–3 semanas + experimental)
+- [x] Crear lead/contacto — **sí** vía Smart Inbox
+- [x] Asignar responsable — **parcial** (reglas nativas documentadas)
+- [x] Tarea / siguiente acción — **parcial** (“Solicitud de Contacto”)
+- [ ] Leer/listar leads vía API — **no verificado** (usar vistas CRM)
+- [x] Webhook — **sí saliente inmuebles**; **no** para alta de leads
+- [x] Límites / campos mínimos — email o teléfono; Smart Inbox cuenta en cupo contactos
+- [x] Exportación / salida — XML / export documentados a nivel producto
+- [ ] Prueba en **cuenta real** (3 emails: nuevo, duplicado, insuficiente) — pendiente operativo
+
+Detalle y go/no-go: [08-prueba-tecnica-witei.md](08-prueba-tecnica-witei.md).
 
 ## Canal — uno solo
 
-Elegir **una** opción por piloto:
-
-| Opción | Entrada típica | Notas |
+| Opción | Entrada | Camino verificado |
 |---|---|---|
-| A — Portal | Email parseado o webhook del portal/tools | Formato email varía; parsers frágiles |
-| B — Web | Formulario → webhook iPaaS | Más controlable; volumen puede ser bajo |
+| A — Portal | Notificación email del portal → Smart Inbox | Documentado por Witei |
+| B — Web | Formulario → email con formato Smart Inbox (directo o vía iPaaS) | Formato oficial publicado |
 
-WhatsApp personal: **fuera**. WhatsApp Business API: fuera del primer brief (permisos, coste, consentimiento).
+WhatsApp personal / WA Business API: **fuera** del primer brief.
 
 ### Checklist de prueba técnica (canal)
 
-- [ ] Payload de ejemplo real (anonimizado)
-- [ ] Campos: nombre, contacto, ref inmueble, timestamp
-- [ ] Identificador estable de origen (`origen_ref`)
-- [ ] Latencia y duplicados del canal
-- [ ] Consentimiento / base legal si se automatiza respuesta (MVP no envía mensajes autónomos)
+- [x] Payload de ejemplo (especificación oficial) — ver [08](08-prueba-tecnica-witei.md)
+- [x] Campos nombre, contacto, ref — en formato Smart Inbox
+- [x] Identificador origen (`Referencia`) — case-sensitive vs cartera Witei
+- [x] Duplicados — fusión si mismo email/teléfono; si no, ficha nueva
+- [ ] Latencia medida en cuenta real — pendiente
+- [x] Consentimiento — MVP no exige auto-respuesta; auto-reply es opt-in de plan
 
 ## Variante Inmovilla
 
-Mismo flujo lógico ([02-flujo.md](02-flujo.md)) y modelo ([03-modelo-datos.md](03-modelo-datos.md)).  
-Sustituye la ficha Witei por checklist equivalente sobre API/conectores Inmovilla. No mezclar ambos CRM en el mismo piloto MVP.
+Mismo flujo lógico ([02-flujo.md](02-flujo.md)). Requiere **otra** prueba técnica (API/conectores Inmovilla). No mezclar ambos CRM en el mismo piloto.
 
-## Límites conocidos (mercado)
+## Límites conocidos
 
-- APIs de CRM verticales españoles: cobertura desigual ([ecosistema CRM](../Orquestacion-Leads-Agencias/ecosistema_tecnologico/02_sistemas_core/crm-inmobiliarios.md)).
-- Portales: sync y calidad variables; bi-dirección no asumida.
-- Fallos silenciosos y duplicados son el riesgo técnico medio del servicio.
+- Sin conector oficial Make; Zapier documentado vía webhooks salientes + email a Smart Inbox.
+- Webhooks de inmuebles: timeout 15 s, reintentos, ventana ~5 min, desactivación si falla el endpoint.
+- No asumir sync bidireccional portal↔CRM más allá de pasarelas/Smart Inbox del cliente.
 
 ## Decisión de go/no-go técnico
 
-| Resultado prueba | Decisión |
+| Resultado | Decisión |
 |---|---|
-| Alta + asignación + tarea posibles | Seguir con iPaaS |
-| Solo export/import manual | Reformular a semi-manual + reglas CRM; no prometer sync |
-| Sin permisos API | Pausar piloto técnico; volver a discovery |
+| Smart Inbox usable en cuenta piloto | **GO** — camino MVP |
+| Cliente exige REST sin espera de API Clientes | **NO GO** / reformular |
+| Solo export manual semanal | Reformular oferta semi-manual |
+| API Clientes habilitada y estable | Ampliar automatización (listados, tareas custom) |

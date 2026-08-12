@@ -18,7 +18,7 @@ Decisión de portafolio: [Resumen ejecutivo](../Orquestacion-Leads-Agencias/Ofer
 |---|---|
 | Investigación de mercado / ICP / oferta | Lista en `Orquestacion-Leads-Agencias/` |
 | Validación comercial (entrevistas, piloto) | Pendiente — [plan 90 días](../Orquestacion-Leads-Agencias/Estrategia-Comercial/06-Plan-comercial-90-dias.md) |
-| Spec técnica del sprint | Lista en [`docs/mvp/`](../mvp/) (Witei + 1 canal; APIs pendientes de prueba) |
+| Spec técnica del sprint | Lista en [`docs/mvp/`](../mvp/); prueba escritorio Witei = **GO condicionado** (Smart Inbox) — [08](../mvp/08-prueba-tecnica-witei.md) |
 | Plataforma interna (`docs/plataforma-interna/`) | Fase posterior; **no sustituye** este roadmap |
 
 ## Relación con la plataforma interna

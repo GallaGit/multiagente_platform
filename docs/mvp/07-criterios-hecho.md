@@ -12,7 +12,9 @@ Cuándo el piloto técnico-operativo del sprint se considera **cumplido**. Disti
 - [ ] Fallo de sync simulado termina en cola `SYNC_FALLIDO`, no en silencio.
 - [ ] Baseline y métricas post documentadas ([06-metricas.md](06-metricas.md)).
 - [ ] Manual de ownership entregado al cliente.
-- [ ] Prueba técnica de API/permisos cerrada o limitaciones explícitas ([04-integraciones.md](04-integraciones.md)).
+- [x] Prueba técnica de escritorio Witei cerrada ([08-prueba-tecnica-witei.md](08-prueba-tecnica-witei.md)): ingesta = Smart Inbox.
+- [ ] Prueba operativa en cuenta real (3 emails: nuevo, duplicado, insuficiente).
+- [ ] Limitaciones API Clientes explícitas al cliente (no REST inmediato salvo habilitación).
 
 ## Hecho comercial (fuera de este brief, pero relacionado)
 

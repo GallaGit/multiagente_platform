@@ -15,7 +15,7 @@ No sustituye lo que se **vende** al cliente ([Sprint de Orquestación de Leads](
 
 | Capa | Agentes / roles | Función |
 |---|---|---|
-| Empresa | Comercial, ops, research, QA, soporte (futuro) | Pipeline, implantación del sprint, seguimiento |
+| Empresa | **Research** (cuentas ICP), comercial, ops, QA, soporte | Pipeline interno |
 | Delivery | **Orchestrator → Frontend \| Backend** | Brief + construcción de UI/API/conectores del servicio |
 
 El dominio de conocimiento es el nicho inmobiliario (leads, CRM, canales, métricas del sprint), no “software genérico”.
@@ -23,7 +23,7 @@ El dominio de conocimiento es el nicho inmobiliario (leads, CRM, canales, métri
 ## Flujo de empresa (resumen)
 
 ```text
-Comercial / discovery
+Research (cuentas ICP) → Comercial / discovery
         ↓
 Operaciones del sprint (reglas, CRM, canales, métricas)
         ↓
@@ -45,5 +45,6 @@ Entrega / soporte al cliente
 | Ruta | Descripción |
 |---|---|
 | [arquitectura-flujo.md](arquitectura-flujo.md) | Empresa vs delivery; ubicación del trío |
+| [agentes/research.md](agentes/research.md) | Agente interno: buscar y puntuar ICP (sin outreach) |
 | [roadmap-fase_1.md](roadmap-fase_1.md) | Evolución de capacidades (knowledge, tools, memoria…) |
 | [fase_1/](fase_1/) | Módulo delivery: contratos técnicos Orchestrator / FE / BE |

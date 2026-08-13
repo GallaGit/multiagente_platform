@@ -23,7 +23,7 @@ flowchart TD
 
 | Etapa | Qué hace (nicho) | Agentes típicos |
 |---|---|---|
-| Comercial / discovery | ICP-01, entrevistas, propuestas, cierre | `business` / sales (futuro) |
+| Comercial / discovery | ICP-01, entrevistas, propuestas, cierre | `research` (lista) + `business` |
 | Operaciones del sprint | Reglas de lead, CRM, canales, SLA, métricas | ops (futuro); knowledge del nicho |
 | **Delivery técnico** | Construir/adaptar UI, API, conectores, paneles | **Orchestrator, Frontend, Backend** |
 | QA / pruebas | Casos normales, duplicados, fallos, antes/después | QA (futuro) |

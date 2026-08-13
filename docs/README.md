@@ -50,5 +50,5 @@ Detalle: [roadmap de producto](roadmap/producto.md).
 ## Siguiente paso
 
 1. Prueba en **cuenta real** Witei (checklist en [mvp/08-prueba-tecnica-witei.md](mvp/08-prueba-tecnica-witei.md)).
-2. Discovery comercial ([plan 90 días](Orquestacion-Leads-Agencias/Estrategia-Comercial/06-Plan-comercial-90-dias.md)).
-3. Plataforma interna solo cuando el sprint genere trabajo repetible.
+2. Lista ICP con el agente research: `POST /research` o `python -m api.research Valencia --limit 15` ([research](plataforma-interna/agentes/research.md)).
+3. Discovery comercial ([plan 90 días](Orquestacion-Leads-Agencias/Estrategia-Comercial/06-Plan-comercial-90-dias.md)).

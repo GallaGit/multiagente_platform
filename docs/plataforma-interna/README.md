@@ -1,13 +1,13 @@
 # Plataforma interna — sistema operativo de la empresa
 
-> **Norte:** [docs/README.md](../README.md) · [roadmap de producto](../roadmap/producto.md)  
+> **Norte:** [docs/README.md](../README.md) · [nicho activo](../nichos/inmobiliaria/)  
 > **Flujo detallado:** [arquitectura-flujo.md](arquitectura-flujo.md)
 
 ## Propósito
 
-Operar la empresa B2B de continuidad operativa para agencias inmobiliarias: comercial, operaciones del sprint, delivery técnico, QA, entrega y soporte — con agentes cuando aporte margen.
+Operar la empresa B2B de continuidad operativa: comercial, operaciones, delivery técnico, QA, entrega y soporte — con agentes cuando aporte margen.
 
-No sustituye lo que se **vende** al cliente ([Sprint de Orquestación de Leads](../Orquestacion-Leads-Agencias/Oferta/Ofertas/Servicio-Profesional.md)). La investigación de mercado vive en [`Orquestacion-Leads-Agencias/`](../Orquestacion-Leads-Agencias/).
+No sustituye lo que se **vende** al cliente. La oferta y la investigación viven en el [nicho activo](../nichos/inmobiliaria/).
 
 ## Decisión de alineación
 
@@ -18,7 +18,7 @@ No sustituye lo que se **vende** al cliente ([Sprint de Orquestación de Leads](
 | Empresa | **Research** (cuentas ICP), comercial, ops, QA, soporte | Pipeline interno |
 | Delivery | **Orchestrator → Frontend \| Backend** | Brief + construcción de UI/API/conectores del servicio |
 
-El dominio de conocimiento es el nicho inmobiliario (leads, CRM, canales, métricas del sprint), no “software genérico”.
+El dominio de conocimiento es el **nicho activo** (`docs/nichos/<id>/`), no software genérico.
 
 ## Flujo de empresa (resumen)
 
@@ -46,5 +46,6 @@ Entrega / soporte al cliente
 |---|---|
 | [arquitectura-flujo.md](arquitectura-flujo.md) | Empresa vs delivery; ubicación del trío |
 | [agentes/research.md](agentes/research.md) | Agente interno: buscar y puntuar ICP (sin outreach) |
+| [agentes/registro.md](agentes/registro.md) | Activación: `enabled` + `requires_niche` (pack en `docs/nichos/`) |
 | [roadmap-fase_1.md](roadmap-fase_1.md) | Evolución de capacidades (knowledge, tools, memoria…) |
 | [fase_1/](fase_1/) | Módulo delivery: contratos técnicos Orchestrator / FE / BE |

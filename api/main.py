@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field
 
 from api.llm import LLMError, complete
 from api.orchestrate import run_chat
+from api.registry import is_active
 from api.research import run_research
 
 app = FastAPI(title="Multiagent Business", version="0.1.0")
@@ -57,6 +58,11 @@ def chat(body: ChatRequest) -> ChatResponse:
 
 @app.post("/research", response_model=ResearchResponse)
 def research(body: ResearchRequest) -> ResearchResponse:
+    if not is_active("research"):
+        raise HTTPException(
+            status_code=503,
+            detail="research está inactivo: requiere nicho activo en docs/nichos/ o está deshabilitado",
+        )
     cities = [c.strip() for c in body.cities if c.strip()]
     if not cities:
         raise HTTPException(status_code=400, detail="cities must not be empty")

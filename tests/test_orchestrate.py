@@ -1,3 +1,6 @@
+from fastapi.testclient import TestClient
+
+from api.main import app
 from api.orchestrate import extract_cities, parse_route, run_chat
 from api.search import SearchHit, parse_ddg_html
 from api.research import run_research
@@ -125,6 +128,40 @@ def test_run_research_without_hits_does_not_require_web():
     )
     assert result.hits == 0
     assert "No invento" in result.reply
+
+
+def test_parse_route_inactive_agent_falls_back_to_business():
+    agent, reason = parse_route(
+        '{"agent":"research","reason":"listar ICP"}',
+        valid_agents={"developer", "business"},
+        fallback="business",
+    )
+    assert agent == "business"
+    assert "inactivo" in reason
+
+
+def test_run_chat_does_not_call_research_when_inactive():
+    def fake_complete(system: str, user: str) -> str:
+        if "Orchestrator" in system or "decidir qué agente" in system:
+            assert "- research:" not in system
+            return '{"agent":"research","reason":"buscar ICP"}'
+        return "Propuesta genérica sin prospección."
+
+    result = run_chat(
+        "Busca clientes ideales en Valencia",
+        fake_complete,
+        niche_present=False,
+    )
+    assert result.routed_to == "business"
+    assert "inactivo" in result.reason
+
+
+def test_research_endpoint_503_when_inactive(monkeypatch):
+    monkeypatch.setattr("api.main.is_active", lambda name: False)
+    client = TestClient(app)
+    response = client.post("/research", json={"cities": ["Valencia"]})
+    assert response.status_code == 503
+    assert "inactivo" in response.json()["detail"]
 
 
 def test_parse_ddg_html_extracts_result():

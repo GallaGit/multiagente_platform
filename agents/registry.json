@@ -1,0 +1,24 @@
+{
+  "agents": {
+    "orchestrator": {
+      "enabled": true,
+      "requires_niche": false,
+      "role": "Decide qué agente debe responder. No implementa."
+    },
+    "developer": {
+      "enabled": true,
+      "requires_niche": false,
+      "role": "Requisitos técnicos, arquitectura, código, estimaciones de esfuerzo."
+    },
+    "business": {
+      "enabled": true,
+      "requires_niche": false,
+      "role": "Propuestas, precios orientativos, organización comercial, discovery."
+    },
+    "research": {
+      "enabled": true,
+      "requires_niche": true,
+      "role": "Buscar cuentas con oportunidad de proceso (ICP del conocimiento activo). Nunca envía mensajes."
+    }
+  }
+}

@@ -8,21 +8,12 @@ from urllib.parse import parse_qs, unquote, urlparse
 
 import httpx
 
+from api.niche import query_templates, skip_hosts
+
 DDG_URL = "https://html.duckduckgo.com/html/"
 USER_AGENT = (
     "Mozilla/5.0 (compatible; MultiagentBusinessResearch/0.1; "
     "+https://localhost research-only)"
-)
-SKIP_HOSTS = (
-    "duckduckgo.com",
-    "youtube.com",
-    "facebook.com",
-    "instagram.com",
-    "idealista.com",
-    "fotocasa.es",
-    "habitaclia.com",
-    "wikipedia.org",
-    "linkedin.com",
 )
 
 
@@ -34,13 +25,10 @@ class SearchHit:
     query: str
 
 
-def build_queries(city: str) -> list[str]:
+def build_queries(city: str, templates: list[str] | None = None) -> list[str]:
     city = city.strip()
-    return [
-        f"inmobiliaria independiente {city} agencia equipo CRM",
-        f"agencia inmobiliaria {city} captación leads WhatsApp -remax -kw -century21",
-        f"inmobiliaria {city} software gestión equipo web",
-    ]
+    patterns = templates if templates is not None else query_templates()
+    return [pattern.format(city=city) for pattern in patterns]
 
 
 def _unwrap_ddg(href: str) -> str:
@@ -69,7 +57,7 @@ def parse_ddg_html(html: str, query: str) -> list[SearchHit]:
         url = _unwrap_ddg(href.replace("&amp;", "&"))
         if not url.startswith("http"):
             continue
-        if any(skip in _host(url) for skip in SKIP_HOSTS):
+        if any(skip in _host(url) for skip in skip_hosts()):
             continue
         title = re.sub(r"<[^>]+>", "", title_html)
         snippet = re.sub(r"<[^>]+>", "", snippet_html)

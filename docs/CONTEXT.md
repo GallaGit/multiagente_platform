@@ -2,11 +2,13 @@
 
 ## Propósito
 
-Este repositorio construye una **empresa digital especializada en optimización de procesos para inmobiliarias en España**, operada progresivamente mediante agentes, automatizaciones y supervisión humana.
+Este repositorio construye una **empresa digital de continuidad operativa**, operada progresivamente mediante agentes, automatizaciones y supervisión humana.
 
 La empresa no se define por una tecnología concreta. Investiga el negocio del cliente, diagnostica sus procesos, propone una mejora, la implementa, la prueba, la entrega y, cuando existe valor recurrente, la mantiene.
 
 **No vendemos tecnología. Vendemos resultados operativos medibles.**
+
+El nicho activo (hoy: inmobiliaria) vive en [`nichos/`](nichos/). Los agentes son oficios reutilizables; el sector entra por el pack del nicho.
 
 ---
 
@@ -29,7 +31,7 @@ La evolución prevista es:
 
 # Misión
 
-Ayudar a inmobiliarias a reducir tiempo, costes, errores y pérdida de trazabilidad mediante:
+Ayudar a empresas del nicho activo a reducir tiempo, costes, errores y pérdida de trazabilidad mediante:
 
 - optimización de procesos;
 - automatización de tareas repetitivas;
@@ -45,48 +47,11 @@ Nunca al revés.
 
 ---
 
-# Nicho inicial
-
-El mercado inicial es **España** y el primer nicho son las **agencias inmobiliarias**.
-
-El cliente prioritario actual es una agencia residencial independiente profesionalizada, con CRM activo, varios canales y autonomía para cambiar procesos e integraciones.
-
-Después de validar y repetir el modelo podrán añadirse otros actores del mismo ecosistema:
-
-- promotoras y comercializadoras de obra nueva;
-- administradores de fincas;
-- gestoras patrimoniales y empresas de alquiler;
-- constructoras y empresas de reformas.
-
-La expansión no debe ocurrir antes de demostrar capacidad de venta, entrega y mantenimiento en el nicho inicial.
-
----
-
-# Problemas que resolvemos
-
-Las inmobiliarias operan procesos distribuidos entre CRM, portales, email, WhatsApp, hojas de cálculo, calendarios y carpetas. Los fallos aparecen principalmente en los traspasos entre herramientas y personas.
-
-Áreas observadas:
-
-- entrada, asignación y seguimiento de leads;
-- conversaciones que no regresan al CRM;
-- programación de visitas y coordinación de agendas;
-- gestión documental y expedientes;
-- publicación y actualización de inmuebles;
-- comunicación con clientes y propietarios;
-- reporting y calidad de datos;
-- integración entre plataformas;
-- continuidad cuando cambia o falta una persona.
-
-La empresa no automatiza un proceso por ser manual. Primero confirma frecuencia, impacto, owner, viabilidad técnica y disposición a pagar.
-
----
-
 # Qué somos y qué no somos
 
 ## Somos
 
-- una empresa vertical de optimización y automatización para inmobiliarias;
+- una empresa vertical de optimización y automatización (un nicho a la vez);
 - una firma de investigación, consultoría e implementación;
 - una operación documentada que acumula conocimiento reutilizable;
 - una empresa asistida por agentes, con control humano.
@@ -95,7 +60,7 @@ La empresa no automatiza un proceso por ser manual. Primero confirma frecuencia,
 
 - una agencia de desarrollo web o software generalista;
 - una empresa de chatbots;
-- una consultoría tecnológica para cualquier sector;
+- una consultoría tecnológica para cualquier sector a la vez;
 - un proveedor que vende “IA” sin proceso ni evidencia;
 - un SaaS horizontal desde el primer día;
 - un experimento académico o proyecto de aprendizaje.
@@ -108,23 +73,9 @@ Podemos desarrollar software para entregar una solución, pero el cliente compra
 
 ## 1. Producto y servicios externos
 
-Es lo que la empresa vende al cliente.
+Es lo que la empresa vende al cliente. La oferta concreta vive en el [nicho activo](nichos/inmobiliaria/).
 
-La primera oferta priorizada es el **Sprint de Orquestación de Leads**, precedido por un diagnóstico corto. Busca que cada lead del alcance tenga origen, responsable, SLA, siguiente acción y resultado trazable.
-
-Esta oferta no define toda la empresa. Es el primer vehículo para:
-
-- obtener clientes e ingresos;
-- aprender con operaciones reales;
-- validar disposición a pagar;
-- descubrir patrones repetibles;
-- crear activos para futuras ofertas.
-
-Documentación:
-
-- investigación y oferta: [`Orquestacion-Leads-Agencias/`](Orquestacion-Leads-Agencias/);
-- brief técnico: [`mvp/`](mvp/);
-- roadmap comercial: [`roadmap/producto.md`](roadmap/producto.md).
+Esta oferta no define toda la empresa. Es el vehículo para obtener clientes, aprender con operaciones reales y crear activos.
 
 ## 2. Plataforma interna
 
@@ -132,23 +83,7 @@ Es el sistema operativo con el que la empresa ejecutará su propio trabajo:
 
 `Comercial → Operaciones → Delivery técnico → QA → Entrega → Soporte`
 
-Roles futuros:
-
-- estrategia y orquestación de empresa;
-- research / inteligencia de mercado;
-- sales / discovery / propuestas;
-- legal y compliance;
-- operaciones e implantación;
-- delivery técnico;
-- QA y seguridad;
-- despliegue y entrega;
-- soporte, mantenimiento y finanzas.
-
-El módulo **Orchestrator + Frontend + Backend** vive dentro de **delivery técnico**. No representa toda la empresa:
-
-- Orchestrator: convierte un encargo aprobado en un brief y lo enruta;
-- Frontend: implementa paneles, interfaces y experiencia de usuario;
-- Backend: implementa APIs, datos, webhooks y conectores.
+El módulo **Orchestrator + Frontend + Backend** vive dentro de **delivery técnico**. No representa toda la empresa.
 
 Documentación: [`plataforma-interna/`](plataforma-interna/).
 
@@ -180,20 +115,11 @@ La documentación es la memoria verificable del negocio y el contexto compartido
 
 Jerarquía:
 
-1. [`CONTEXT.md`](CONTEXT.md): identidad, visión y límites de la empresa.
-2. [`Orquestacion-Leads-Agencias/`](Orquestacion-Leads-Agencias/): fuente de verdad de mercado, problemas, ICP, competencia y oferta.
-3. [`mvp/`](mvp/): especificación técnica de la primera oferta.
-4. [`plataforma-interna/`](plataforma-interna/): arquitectura del sistema operativo interno.
-5. [`roadmap/producto.md`](roadmap/producto.md): secuencia activa de validación y crecimiento.
+1. [`CONTEXT.md`](CONTEXT.md): identidad, visión y límites de la empresa (transversal).
+2. [`nichos/<id>/`](nichos/): mercado, problemas, ICP, oferta y contexto ejecutable del nicho.
+3. [`plataforma-interna/`](plataforma-interna/): arquitectura del sistema operativo interno.
 
-Cada decisión relevante debe incluir:
-
-- evidencia y fecha;
-- supuesto o limitación;
-- responsable;
-- métrica o criterio de hecho;
-- próximo experimento;
-- condición de avance, pausa o descarte.
+Cada decisión relevante debe incluir evidencia, supuesto, responsable, métrica, próximo experimento y condición de avance.
 
 ---
 
@@ -210,6 +136,7 @@ Cada decisión relevante debe incluir:
 - Especialización antes que expansión.
 - Activos reutilizables antes que personalización infinita.
 - Evidencia real antes que autonomía de agentes.
+- El nicho entra por pack (`docs/nichos/`), no por el código de los agentes.
 
 ---
 
@@ -217,8 +144,8 @@ Cada decisión relevante debe incluir:
 
 ## Etapa 1 — Especialización y primera oferta
 
-- consolidar conocimiento de agencias inmobiliarias;
-- validar el Sprint de Orquestación de Leads;
+- consolidar conocimiento del nicho activo;
+- validar la primera oferta productizada;
 - ejecutar una prueba técnica real y discovery comercial;
 - conseguir al menos un compromiso económico.
 
@@ -243,8 +170,8 @@ Cada decisión relevante debe incluir:
 ## Etapa 5 — SaaS y expansión
 
 - SaaS vertical solo con repetición y economía demostradas;
-- expansión al ecosistema inmobiliario;
-- internacionalización cuando el modelo local sea estable.
+- expansión a actores adyacentes del mismo ecosistema;
+- otro nicho solo cuando el modelo local sea estable.
 
 ---
 
@@ -252,22 +179,4 @@ Cada decisión relevante debe incluir:
 
 **Estado: transición de investigación estratégica a validación técnica y comercial.**
 
-Completado:
-
-- investigación del mercado y ecosistema inmobiliario;
-- análisis de dolores, competencia, oportunidades e ICP;
-- definición del portafolio y primera oferta priorizada;
-- brief técnico del Sprint de Orquestación de Leads;
-- prueba de escritorio sobre Witei y Smart Inbox;
-- alineación inicial de la plataforma interna con el flujo de empresa.
-
-Pendiente inmediato:
-
-1. crear una cuenta Witei y ejecutar la prueba real de Smart Inbox;
-2. registrar resultados de alta, duplicado, asignación y datos insuficientes;
-3. realizar discovery con agencias del ICP;
-4. confirmar problema pagable, baseline y acceso técnico;
-5. proponer y cerrar un piloto pagado;
-6. automatizar la plataforma interna solo a partir de trabajo real y repetible.
-
-No estamos construyendo todavía un SaaS ni una empresa completamente autónoma. Estamos construyendo una empresa real, vertical y asistida por agentes, empezando por una oferta concreta que permita vender, entregar y aprender con evidencia.
+Nicho activo: [inmobiliaria](nichos/inmobiliaria/CONTEXTO.md). Plataforma: [plataforma-interna](plataforma-interna/).

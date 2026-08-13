@@ -1,6 +1,6 @@
 > **Estado:** evolución de la **plataforma interna** (SO de la empresa).  
-> Norte: [docs/README.md](../README.md) · [roadmap de producto](../roadmap/producto.md) · [plataforma](README.md) · [arquitectura-flujo.md](arquitectura-flujo.md)  
-> Producto vendible: [Sprint de Orquestación de Leads](../Orquestacion-Leads-Agencias/Oferta/Ofertas/Servicio-Profesional.md).
+> Norte: [docs/README.md](../README.md) · [roadmap de producto](../nichos/inmobiliaria/roadmap/producto.md) · [plataforma](README.md) · [arquitectura-flujo.md](arquitectura-flujo.md)  
+> Producto del nicho activo: [Sprint de Orquestación de Leads](../nichos/inmobiliaria/Orquestacion-Leads-Agencias/Oferta/Ofertas/Servicio-Profesional.md).
 
 La plataforma crece por **capacidades de empresa**. Orchestrator / Frontend / Backend son el **módulo de delivery**, no el sistema completo.
 
@@ -60,7 +60,7 @@ agents/
         system.md
 ```
 
-Así el dominio (hoy: inmobiliario / orquestación de leads) vive en `knowledge/`, no solo en el prompt.
+Así el dominio vive en `docs/nichos/<id>/`, no solo en el prompt.
 
 Si mañana cambia el nicho, se cambia el conocimiento; los roles de empresa y el módulo delivery se mantienen.
 
@@ -222,8 +222,7 @@ Todo vive en la **raíz del proyecto** (no hay carpeta envoltorio `business-ai/`
 │   ├── qa/               # empresa (futuro)
 │   └── support/          # empresa (futuro)
 │
-├── knowledge/
-│   └── inmobiliario_leads/   # nicho actual (desde Orquestacion-Leads-Agencias)
+├── docs/nichos/<id>/         # pack de nicho (manifest + runtime + investigación)
 │
 ├── memory/
 ├── tools/
@@ -233,7 +232,7 @@ Todo vive en la **raíz del proyecto** (no hay carpeta envoltorio `business-ai/`
 └── docs/
 ```
 
-**`knowledge`** separado de **`agents`**: el nicho actual es orquestación de leads para agencias; no `software_business` genérico ni vacaciones.
+**`docs/nichos`** separado de **`agents`**: el pack del nicho activo inyecta contexto; los roles no cambian.
 
 ## Enfoque de negocio
 

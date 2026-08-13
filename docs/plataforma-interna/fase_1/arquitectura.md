@@ -50,7 +50,7 @@ docs/
 Notas:
 
 - Pueden coexistir `sales`, `ops`, `developer`, `business`, etc. Este módulo documenta el **subflujo delivery**.
-- `knowledge/` del nicho (leads / agencias) se añade en fases posteriores; aún no es requisito de esta base.
+- El pack de nicho (`docs/nichos/<id>/`) no es requisito del módulo delivery; sí lo es de `research`.
 
 ## Capas mínimas de código
 

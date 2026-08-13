@@ -6,7 +6,7 @@ Mapa empresa: [arquitectura-flujo.md](../arquitectura-flujo.md). Ver [decisiones
 ## 1. Estructura de agentes
 
 - [ ] `agents/orchestrator/`, `agents/frontend/`, `agents/backend/`
-- [ ] `system.md` alineados al nicho (plantillas en [agentes.md](agentes.md))
+- [ ] `system.md` de oficio (plantillas en [agentes.md](agentes.md); el nicho entra por pack)
 - [x] ~~Legacy~~ `developer` / `business` (puede permanecer hasta realinear)
 
 ## 2. Carga de prompts

@@ -6,6 +6,7 @@ from dataclasses import dataclass
 
 from api.config import ROOT_DIR
 from api.llm import complete
+from api.niche import entity_plural, load_niche_context
 from api.prompts import load_system_prompt
 from api.search import SearchHit, search_cities
 
@@ -20,12 +21,12 @@ class ResearchResult:
 
 def _extra_context() -> str:
     parts: list[str] = []
-    for path in (
-        ROOT_DIR / "agents" / "research" / "rules.md",
-        ROOT_DIR / "knowledge" / "inmobiliario_leads" / "icp-research.md",
-    ):
-        if path.is_file():
-            parts.append(path.read_text(encoding="utf-8"))
+    rules = ROOT_DIR / "agents" / "research" / "rules.md"
+    if rules.is_file():
+        parts.append(rules.read_text(encoding="utf-8"))
+    niche = load_niche_context()
+    if niche:
+        parts.append(niche)
     return "\n\n".join(parts)
 
 
@@ -57,9 +58,10 @@ def build_user_prompt(
         + "\n- ".join(queries)
         + "\n\nResultados públicos (ÚNICA evidencia permitida):\n"
         + _format_hits(hits)
-        + "\n\nInstrucción: lista solo agencias de esos resultados con oportunidad de "
-        "optimizar o automatizar procesos (canales, CRM, leads, equipo, fricción). "
-        "No listes inmobiliarias genéricas sin esa señal. No inventes filas. No envíes emails."
+        + f"\n\nInstrucción: lista solo {entity_plural()} de esos resultados con "
+        "oportunidad de optimizar o automatizar procesos (canales, CRM, leads, "
+        "equipo, fricción). No listes cuentas genéricas sin esa señal. "
+        "No inventes filas. No envíes emails."
     )
 
 
@@ -91,13 +93,22 @@ def run_research(
 
 def main() -> None:
     import argparse
+    import sys
+
+    from api.registry import is_active
 
     parser = argparse.ArgumentParser(
-        description="Lista candidatas ICP-01. No envía mensajes."
+        description="Lista candidatas ICP. No envía mensajes."
     )
     parser.add_argument("cities", nargs="+", help="Ciudades, p.ej. Valencia Alicante")
     parser.add_argument("--limit", type=int, default=15)
     args = parser.parse_args()
+    if not is_active("research"):
+        print(
+            "research está inactivo: requiere nicho activo en docs/nichos/ o está deshabilitado",
+            file=sys.stderr,
+        )
+        raise SystemExit(1)
     result = run_research(args.cities, limit=args.limit)
     print(result.reply)
     print("\n---")

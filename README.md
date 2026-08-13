@@ -1,14 +1,14 @@
 # Multiagent Business
 
-MVP de una plataforma multiagente para investigar, vender y desarrollar soluciones de continuidad operativa para agencias inmobiliarias en España.
+MVP de una plataforma multiagente para investigar, vender y desarrollar soluciones de continuidad operativa. El nicho activo (hoy inmobiliaria) vive en [`docs/nichos/inmobiliaria/`](docs/nichos/inmobiliaria/).
 
 El sistema expone una API con FastAPI que utiliza un agente orquestador para dirigir cada solicitud al agente especializado adecuado:
 
-- **Research:** investigación de agencias y generación de listas ICP con evidencia pública.
+- **Research:** investigación de cuentas ICP del nicho activo con evidencia pública.
 - **Business:** discovery, propuestas, precios y estrategia comercial.
 - **Developer:** arquitectura, APIs, código e integraciones.
 
-> El producto externo —el Sprint de Orquestación de Leads— se encuentra definido en [`docs/mvp/`](docs/mvp/). El código actual implementa el MVP de la plataforma multiagente interna.
+> El producto externo del nicho activo está en [`docs/nichos/inmobiliaria/mvp/`](docs/nichos/inmobiliaria/mvp/). El código actual implementa el MVP de la plataforma multiagente interna.
 
 ## Arquitectura
 
@@ -179,8 +179,8 @@ Los tests utilizan mocks para el LLM, por lo que no requieren una clave de Groq.
 │   ├── business/
 │   └── developer/
 ├── api/                     # API, orquestación, LLM y búsqueda web
-├── docs/                    # Documentación de negocio y técnica
-├── knowledge/               # Conocimiento de dominio para los agentes
+├── docs/                    # Empresa, plataforma y packs de nicho
+│   └── nichos/inmobiliaria/ # Nicho activo (investigación + runtime)
 ├── tests/                   # Pruebas automatizadas
 ├── .env.example             # Plantilla de configuración
 ├── pytest.ini

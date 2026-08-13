@@ -1,0 +1,23 @@
+{
+  "id": "inmobiliaria",
+  "label": "Agencias inmobiliarias — orquestación de leads",
+  "market": "España",
+  "entity": {
+    "singular": "agencia",
+    "plural": "agencias",
+    "skip_tokens": ["agencias", "inmobiliarias", "clientes", "cuentas"]
+  },
+  "context_files": ["runtime/icp-research.md"],
+  "search": {
+    "query_templates": [
+      "inmobiliaria independiente {city} agencia equipo CRM",
+      "agencia inmobiliaria {city} captación leads WhatsApp -remax -kw -century21",
+      "inmobiliaria {city} software gestión equipo web"
+    ],
+    "skip_hosts": [
+      "idealista.com",
+      "fotocasa.es",
+      "habitaclia.com"
+    ]
+  }
+}

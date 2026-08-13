@@ -18,6 +18,8 @@ Registro para no repetir debates. Actualizar solo si cambia una decisión.
 | Norte comercial | Sprint de Orquestación de Leads; producto externo primero | 2026-08-12 |
 | Deuda FE/BE | Migración `developer`/`business` → FE/BE no es prioridad frente al sprint vendible | 2026-08-12 |
 | Dominio | Knowledge y prompts orientados a agencias / leads, no software genérico | 2026-08-12 |
+| Registro de agentes | `agents/registry.json`: `enabled` + `requires_niche`; research se apaga sin manifiesto de nicho | 2026-08-13 |
+| Nicho activo | `ACTIVE_NICHE` + `docs/nichos/<id>/manifest.json` | 2026-08-13 |
 
 ## Código vs documentación
 

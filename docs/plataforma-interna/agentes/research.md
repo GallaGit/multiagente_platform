@@ -4,13 +4,15 @@ Agente de **plataforma interna** (capa comercial). No es el producto que se vend
 
 ## Qué hace
 
-Dadas una o más ciudades, busca resultados **públicos** y lista agencias donde haya **oportunidad de optimizar o automatizar procesos** (canales sueltos, CRM, leads, equipo, fricción). No basta con “ser inmobiliaria”. Un humano aprueba cada contacto.
+Dadas una o más ciudades, busca resultados **públicos** y lista **cuentas del ICP del conocimiento activo** donde haya **oportunidad de optimizar o automatizar procesos** (canales sueltos, CRM, leads, equipo, fricción). No basta con “ser del sector”. Un humano aprueba cada contacto.
+
+`research` **requiere nicho**: si el pack activo en `docs/nichos/` no tiene manifiesto válido o está `enabled: false`, el agente no entra en el orquestador y `POST /research` responde **503**. Ver [registro.md](registro.md).
 
 ## Qué no hace
 
 - Enviar email, WhatsApp, SMS o LinkedIn.
-- Inventar agencias si la búsqueda no devuelve fuentes.
-- Sustituir el Sprint de Leads ni Witei.
+- Inventar cuentas si la búsqueda no devuelve fuentes.
+- Sustituir la oferta del nicho activo.
 
 ## Cómo usarlo
 
@@ -32,4 +34,4 @@ python -m api.research Valencia Alicante --limit 15
 
 ## Cumplimiento
 
-Solo datos profesionales públicos. Canal de contacto y envío: decisión humana. Ver [Prospección en España](../../Orquestacion-Leads-Agencias/Estrategia-Comercial/Cumplimiento/Prospeccion-en-Espana.md).
+Solo datos profesionales públicos. Canal de contacto y envío: decisión humana. Cumplimiento del nicho activo: [Prospección en España](../../nichos/inmobiliaria/Orquestacion-Leads-Agencias/Estrategia-Comercial/Cumplimiento/Prospeccion-en-Espana.md).

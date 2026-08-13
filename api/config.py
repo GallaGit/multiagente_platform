@@ -10,11 +10,16 @@ load_dotenv(ROOT_DIR / ".env")
 DEFAULT_MODEL = "llama-3.3-70b-versatile"
 
 
+NICHE_ROOT = ROOT_DIR / "docs" / "nichos"
+DEFAULT_NICHE = "inmobiliaria"
+
+
 class Settings:
     def __init__(self) -> None:
         self.llm_api_key = os.getenv("LLM_API_KEY", "").strip()
         self.llm_provider = os.getenv("LLM_PROVIDER", "groq").strip().lower()
         self.llm_model = os.getenv("LLM_MODEL", DEFAULT_MODEL).strip()
+        self.active_niche = os.getenv("ACTIVE_NICHE", DEFAULT_NICHE).strip() or DEFAULT_NICHE
 
 
 @lru_cache

@@ -1,12 +1,29 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
+from api.config import get_settings
+from api.leads.hubspot import HubSpotError
+from api.leads.models import IngestResult, LeadIngestRequest
+from api.leads.orchestrator import ingest_lead
+from api.leads.routes import router as leads_router
 from api.llm import LLMError, complete
 from api.orchestrate import run_chat
 from api.registry import is_active
 from api.research import run_research
 
-app = FastAPI(title="Multiagent Business", version="0.1.0")
+app = FastAPI(title="Multiagent Business", version="0.2.0")
+
+settings = get_settings()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.cors_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(leads_router)
 
 
 class ChatRequest(BaseModel):
@@ -34,6 +51,21 @@ class ResearchResponse(BaseModel):
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
+
+
+@app.post("/webhooks/lead", response_model=IngestResult, tags=["webhooks"])
+def webhook_lead(body: LeadIngestRequest) -> IngestResult:
+    if not settings.hubspot_access_token:
+        raise HTTPException(status_code=503, detail="HUBSPOT_ACCESS_TOKEN no configurado")
+    from api.leads.hubspot import HubSpotClient
+
+    try:
+        return ingest_lead(body, HubSpotClient())
+    except HubSpotError as exc:
+        status = exc.status_code or 502
+        if status >= 500 or status == 429:
+            status = 502
+        raise HTTPException(status_code=status, detail=str(exc)) from exc
 
 
 @app.post("/chat", response_model=ChatResponse)

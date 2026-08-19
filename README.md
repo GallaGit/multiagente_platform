@@ -1,203 +1,152 @@
 # Multiagent Business
 
-MVP de una plataforma multiagente para investigar, vender y desarrollar soluciones de continuidad operativa. El nicho activo (hoy inmobiliaria) vive en [`docs/nichos/inmobiliaria/`](docs/nichos/inmobiliaria/).
+MVP unificado: **dashboard glassmorphism** + **orquestación de leads (HubSpot)** + **agentes internos** (research, business, developer).
 
-El sistema expone una API con FastAPI que utiliza un agente orquestador para dirigir cada solicitud al agente especializado adecuado:
+El nicho activo (inmobiliaria) vive en [`docs/nichos/inmobiliaria/`](docs/nichos/inmobiliaria/). El brief del producto vendible está en [`docs/nichos/inmobiliaria/mvp/`](docs/nichos/inmobiliaria/mvp/).
 
-- **Research:** investigación de cuentas ICP del nicho activo con evidencia pública.
-- **Business:** discovery, propuestas, precios y estrategia comercial.
-- **Developer:** arquitectura, APIs, código e integraciones.
+## Qué incluye
 
-> El producto externo del nicho activo está en [`docs/nichos/inmobiliaria/mvp/`](docs/nichos/inmobiliaria/mvp/). El código actual implementa el MVP de la plataforma multiagente interna.
+| Área | Descripción |
+|------|-------------|
+| **Panel Leads** | KPIs, tabla, cola de excepciones, ingesta simulada de portal → HubSpot |
+| **Panel Agentes** | Chat orquestador + research ICP vía Groq |
+| **API** | FastAPI: `/leads/*`, `/webhooks/lead`, `/chat`, `/research` |
+
+HubSpot actúa como CRM de laboratorio (sustituto operativo de Witei para validar el flujo sin cuenta inmobiliaria).
 
 ## Arquitectura
 
 ```text
-Cliente HTTP o CLI
-        |
+Frontend (React + Vite, :5173)
+        |  proxy /api → :8000
         v
    FastAPI API
-        |
-        v
-  Orchestrator
    /    |     \
   v     v      v
-Research Business Developer
-  |       |       |
-  +-------+-------+
-          |
-        Groq
+Leads  Chat  Research
+  |       \    /
+  v        Groq
+HubSpot CRM
 ```
-
-El agente `research` también consulta resultados públicos mediante DuckDuckGo antes de generar su respuesta.
-
-## Tecnologías
-
-- Python 3
-- FastAPI y Uvicorn
-- Groq como proveedor LLM
-- Pydantic
-- HTTPX
-- Pytest
 
 ## Requisitos
 
-- Python 3 instalado.
-- Una clave de API de [Groq](https://console.groq.com/keys).
-- Acceso a Internet para Groq y las búsquedas de investigación.
+- Python 3.11+
+- Node.js 18+ y npm
+- [Groq API key](https://console.groq.com/keys) (agentes)
+- [HubSpot Private App](https://developers.hubspot.com/docs/api/private-apps) (panel de leads)
 
-## Instalación
-
-Clona el repositorio y entra en su directorio:
-
-```bash
-git clone <URL_DEL_REPOSITORIO>
-cd "Multiagent business"
-```
-
-Crea y activa un entorno virtual.
-
-En Windows con Git Bash:
+## Instalación backend
 
 ```bash
 python -m venv .venv
-source .venv/Scripts/activate
-```
-
-En Linux o macOS:
-
-```bash
-python -m venv .venv
-source .venv/bin/activate
-```
-
-Instala las dependencias:
-
-```bash
+source .venv/Scripts/activate   # Windows Git Bash
 pip install -r requirements.txt
-```
-
-Crea el archivo de configuración:
-
-```bash
 cp .env.example .env
 ```
 
-Completa `.env` con tu clave:
+Completa `.env`:
 
 ```env
-LLM_API_KEY=tu_clave_de_groq
-LLM_PROVIDER=groq
-LLM_MODEL=llama-3.3-70b-versatile
+LLM_API_KEY=tu_clave_groq
+HUBSPOT_ACCESS_TOKEN=tu_token_private_app
+SLA_MINUTES=60
 ```
 
-Actualmente, `groq` es el único proveedor LLM soportado.
+### Configurar HubSpot
 
-## Ejecución
+1. Crea una **Private App** en HubSpot con scopes:
+   - `crm.objects.contacts.read` / `write`
+   - `crm.objects.tasks.write`
+   - `crm.objects.owners.read`
+   - `crm.schemas.contacts.read` / `write`
+2. Copia el access token a `HUBSPOT_ACCESS_TOKEN`.
+3. Crea las propiedades custom en contactos:
 
-Inicia la API en modo desarrollo:
+```bash
+python -m api.hubspot_setup
+```
+
+4. Asegúrate de tener al menos un **owner** (usuario) en la cuenta HubSpot para el round-robin.
+
+## Instalación frontend
+
+```bash
+cd frontend
+npm install
+```
+
+## Ejecución (desarrollo)
+
+Terminal 1 — API:
 
 ```bash
 uvicorn api.main:app --reload
 ```
 
-La aplicación estará disponible en:
-
-- API: <http://127.0.0.1:8000>
-- Swagger UI: <http://127.0.0.1:8000/docs>
-- Health check: <http://127.0.0.1:8000/health>
-
-## Uso de la API
-
-### Comprobar el estado
+Terminal 2 — UI:
 
 ```bash
-curl http://127.0.0.1:8000/health
+cd frontend
+npm run dev
 ```
 
-Respuesta:
+Abre <http://localhost:5173>
 
-```json
-{
-  "status": "ok"
-}
-```
+- **/** — Panel de leads (HubSpot)
+- **/agentes** — Chat y research
 
-### Enviar una solicitud al orquestador
+API docs: <http://127.0.0.1:8000/docs>
+
+## Checklist demo (3 casos)
+
+1. **Lead nuevo:** formulario con email + teléfono → contacto en HubSpot con responsable y tarea.
+2. **Duplicado:** reenviar mismo email → actualiza contacto, no segundo owner.
+3. **Datos insuficientes:** solo nombre → excepción `DATOS_INSUFICIENTES` en cola.
+
+## API de leads (resumen)
 
 ```bash
-curl -X POST http://127.0.0.1:8000/chat \
+# Ingestar lead simulado
+curl -X POST http://127.0.0.1:8000/leads/ingest \
   -H "Content-Type: application/json" \
-  -d "{\"message\":\"Busca clientes ideales en Valencia y Alicante\"}"
-```
+  -d '{"nombre":"Ana","email":"ana@demo.com","telefono":"612345678","origen":"portal","inmueble_ref":"REF-001"}'
 
-Ejemplo de respuesta:
-
-```json
-{
-  "routed_to": "research",
-  "reply": "Respuesta generada por el agente...",
-  "reason": "La solicitud requiere investigación de prospectos."
-}
-```
-
-El campo `routed_to` puede ser `research`, `business` o `developer`.
-
-### Ejecutar una investigación directa
-
-```bash
-curl -X POST http://127.0.0.1:8000/research \
-  -H "Content-Type: application/json" \
-  -d "{\"cities\":[\"Valencia\",\"Alicante\"],\"limit\":15}"
-```
-
-La respuesta contiene el informe, las consultas realizadas, el número de resultados encontrados y una nota de cumplimiento.
-
-También puedes ejecutar el agente desde la terminal:
-
-```bash
-python -m api.research Valencia Alicante --limit 15
+# Listar leads y métricas
+curl http://127.0.0.1:8000/leads
+curl http://127.0.0.1:8000/leads/metrics
+curl http://127.0.0.1:8000/leads/exceptions
 ```
 
 ## Tests
-
-Ejecuta la suite con:
 
 ```bash
 python -m pytest
 ```
 
-Los tests utilizan mocks para el LLM, por lo que no requieren una clave de Groq.
+Los tests de leads usan un cliente HubSpot simulado; no requieren token real.
 
 ## Estructura del proyecto
 
 ```text
 .
-├── agents/                  # Prompts y reglas de los agentes
-│   ├── orchestrator/
-│   ├── research/
-│   ├── business/
-│   └── developer/
-├── api/                     # API, orquestación, LLM y búsqueda web
-├── docs/                    # Empresa, plataforma y packs de nicho
-│   └── nichos/inmobiliaria/ # Nicho activo (investigación + runtime)
-├── tests/                   # Pruebas automatizadas
-├── .env.example             # Plantilla de configuración
-├── pytest.ini
-└── requirements.txt
+├── agents/           # Prompts de orchestrator, research, business, developer
+├── api/
+│   ├── leads/        # Orquestación + HubSpot + rutas /leads
+│   ├── hubspot_setup.py
+│   └── main.py
+├── frontend/         # React + Vite + Tailwind (glassmorphism)
+├── docs/
+└── tests/
 ```
-
-Consulta [`docs/README.md`](docs/README.md) para acceder a la documentación extendida sobre la visión, el ICP, la oferta, el MVP y la arquitectura interna.
 
 ## Limitaciones actuales
 
-- No existe persistencia ni memoria entre sesiones.
-- La API no incluye autenticación; no debe exponerse directamente en producción.
-- Solo se admite Groq como proveedor LLM.
-- La búsqueda depende del HTML público de DuckDuckGo.
-- Las integraciones reales con CRM todavía no están implementadas.
-- El agente de investigación no envía mensajes ni contacta prospectos. Cada contacto y canal debe ser aprobado por una persona.
+- Sin autenticación en API ni UI (solo desarrollo local).
+- HubSpot es el CRM de laboratorio; Witei/Inmovilla quedan para piloto en cuenta del cliente.
+- Chat/research sin memoria entre sesiones.
+- Research no contacta prospectos; cumplimiento RGPD/LSSI manual.
 
 ## Cumplimiento
 
-La investigación utiliza únicamente evidencia pública. El uso de los resultados debe respetar el RGPD, la LSSI y las políticas de cada canal. Este proyecto no automatiza el envío de correos, mensajes ni acciones comerciales.
+La investigación usa evidencia pública. Este proyecto no automatiza outreach comercial sin aprobación humana.

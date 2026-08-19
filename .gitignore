@@ -9,4 +9,6 @@ __pycache__/
 .ruff_cache/
 .idea/
 .vscode/
+node_modules/
+frontend/dist/
 *.log

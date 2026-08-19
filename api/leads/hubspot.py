@@ -168,6 +168,7 @@ class HubSpotClient:
     def __init__(self, access_token: str | None = None) -> None:
         settings = get_settings()
         self.access_token = access_token or settings.hubspot_access_token
+        self.verify_ssl = settings.hubspot_verify_ssl
         if not self.access_token:
             raise HubSpotError("HUBSPOT_ACCESS_TOKEN no configurado")
 
@@ -186,7 +187,7 @@ class HubSpotClient:
         params: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         url = f"{HUBSPOT_BASE}{path}"
-        with httpx.Client(timeout=30.0) as client:
+        with httpx.Client(timeout=30.0, verify=self.verify_ssl) as client:
             response = client.request(
                 method,
                 url,

@@ -26,6 +26,8 @@ def complete(system: str, user: str) -> str:
             ],
             temperature=0.2,
             max_completion_tokens=2048,
+            top_p=1,
+            reasoning_effort="medium",
             stream=False,
         )
     except Exception as exc:  # noqa: BLE001 — surface provider errors as 502

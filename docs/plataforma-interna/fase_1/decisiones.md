@@ -8,7 +8,7 @@ Registro para no repetir debates. Actualizar solo si cambia una decisión.
 | Alcance del módulo | Orchestrator documenta (brief) + delega a Frontend o Backend | 2026-08-09 |
 | LLM | Groq (`LLM_PROVIDER=groq`) | 2026-08-05 |
 | Cliente | SDK oficial `groq` (`from groq import Groq`) | 2026-08-05 |
-| Modelo por defecto | `llama-3.3-70b-versatile` | 2026-08-05 |
+| Modelo por defecto | `openai/gpt-oss-120b` | 2026-08-19 |
 | Agentes del módulo | `orchestrator`, `frontend`, `backend` | 2026-08-09 |
 | Respuesta API | `{ routed_to, documentation, reply, reason }` | 2026-08-09 |
 | Fallback de ruta | Si el JSON del Orchestrator falla → `backend` | 2026-08-09 |

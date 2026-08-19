@@ -46,6 +46,10 @@ Que cada lead del alcance quede en el CRM con **origen**, **responsable**, **SLA
 
 ## Estado
 
-Spec técnica **redactada**. Prueba de escritorio Witei **cerrada** (GO condicionado vía Smart Inbox). Prueba en cuenta real y piloto pagado: **pendientes**.
+Spec técnica **redactada**. Prueba de escritorio Witei **cerrada** (GO condicionado vía Smart Inbox).
+
+**Laboratorio de código (repo):** dashboard + API con **HubSpot** como CRM de prueba (Private App + Smart-Inbox-equivalente vía `/leads/ingest`). No sustituye el piloto en cuenta Witei del cliente; valida orquestación (dedupe, owner, SLA, excepciones) en local.
+
+Prueba en cuenta Witei real y piloto pagado: **pendientes**.
 
 Norte del nicho: [README](../README.md). Norte de la empresa: [docs/README.md](../../README.md).

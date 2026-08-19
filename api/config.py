@@ -5,9 +5,9 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
-load_dotenv(ROOT_DIR / ".env")
+load_dotenv(ROOT_DIR / ".env", override=True)
 
-DEFAULT_MODEL = "llama-3.3-70b-versatile"
+DEFAULT_MODEL = "openai/gpt-oss-120b"
 
 
 NICHE_ROOT = ROOT_DIR / "docs" / "nichos"
@@ -32,6 +32,8 @@ class Settings:
         )
         cors_raw = os.getenv("CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173")
         self.cors_origins = [origin.strip() for origin in cors_raw.split(",") if origin.strip()]
+        verify_raw = os.getenv("HUBSPOT_VERIFY_SSL", "true").strip().lower()
+        self.hubspot_verify_ssl = verify_raw not in {"0", "false", "no", "off"}
 
 
 @lru_cache

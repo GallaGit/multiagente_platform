@@ -87,6 +87,32 @@ def reset_round_robin(owner_ids: list[str] | None = None) -> None:
         _round_robin = RoundRobinState(owner_ids=[])
 
 
+def _try_create_task(
+    hubspot: HubSpotClient,
+    *,
+    contact_id: str,
+    subject: str,
+    body: str,
+    due_at: datetime,
+    owner_id: str | None,
+) -> str | None:
+    """Create HubSpot task; return warning if scope unavailable."""
+    try:
+        hubspot.create_task(
+            contact_id=contact_id,
+            subject=subject,
+            body=body,
+            due_at=due_at,
+            owner_id=owner_id,
+        )
+        return None
+    except HubSpotError as exc:
+        # Account without crm.objects.tasks.write → continue with contact only
+        if exc.status_code in {403, 401}:
+            return "Tarea HubSpot no creada (scope tasks no disponible); contacto OK"
+        raise
+
+
 def ingest_lead(
     payload: LeadIngestRequest,
     client: HubSpotClient | None = None,
@@ -146,24 +172,27 @@ def ingest_lead(
         )
         try:
             contact = hubspot.update_contact(contact_id, props)
-            hubspot.create_task(
-                contact_id=contact_id,
-                subject="Solicitud de contacto (duplicado)",
-                body=payload.mensaje or "Lead recurrente desde canal",
-                due_at=sla_at,
-                owner_id=existing_owner,
-            )
         except HubSpotError as exc:
             raise HubSpotError(
                 f"{ExceptionCode.SYNC_FALLIDO.value}: {exc}",
                 status_code=exc.status_code,
             ) from exc
-
+        task_warn = _try_create_task(
+            hubspot,
+            contact_id=contact_id,
+            subject="Solicitud de contacto (duplicado)",
+            body=payload.mensaje or "Lead recurrente desde canal",
+            due_at=sla_at,
+            owner_id=existing_owner,
+        )
         lead = hubspot.contact_to_lead(contact, is_duplicate=True)
+        msg = "Contacto existente actualizado; no se creo segundo responsable"
+        if task_warn:
+            msg = f"{msg}. {task_warn}"
         return IngestResult(
             lead=lead,
             action="duplicate",
-            message="Contacto existente actualizado; no se creo segundo responsable",
+            message=msg,
         )
 
     owner_id = pick_next_owner(hubspot)
@@ -210,25 +239,30 @@ def ingest_lead(
     try:
         contact = hubspot.create_contact(props)
         contact_id = str(contact["id"])
-        hubspot.create_task(
-            contact_id=contact_id,
-            subject="Primera respuesta lead",
-            body=payload.mensaje or "Nuevo lead desde canal",
-            due_at=sla_at,
-            owner_id=owner_id,
-        )
     except HubSpotError as exc:
         raise HubSpotError(
             f"{ExceptionCode.SYNC_FALLIDO.value}: {exc}",
             status_code=exc.status_code,
         ) from exc
 
+    task_warn = _try_create_task(
+        hubspot,
+        contact_id=contact_id,
+        subject="Primera respuesta lead",
+        body=payload.mensaje or "Nuevo lead desde canal",
+        due_at=sla_at,
+        owner_id=owner_id,
+    )
+
     owners_map = _owners_map(hubspot)
     lead = hubspot.contact_to_lead(contact, owners_map=owners_map)
+    msg = "Lead creado con responsable y tarea"
+    if task_warn:
+        msg = f"Lead creado con responsable. {task_warn}"
     return IngestResult(
         lead=lead,
         action="created",
-        message="Lead creado con responsable y tarea",
+        message=msg,
     )
 
 

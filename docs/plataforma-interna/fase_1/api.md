@@ -53,7 +53,7 @@ El Orchestrator documenta el encargo y delega a `frontend` o `backend`.
 |----------|---------|-------------|
 | `LLM_API_KEY` | `gsk_...` | Clave de Groq |
 | `LLM_PROVIDER` | `groq` | Proveedor (MVP: solo `groq`) |
-| `LLM_MODEL` | `llama-3.3-70b-versatile` | Modelo chat de Groq |
+| `LLM_MODEL` | `openai/gpt-oss-120b` | Modelo chat de Groq |
 
 Plantilla: `.env.example`. No commitear `.env`.
 

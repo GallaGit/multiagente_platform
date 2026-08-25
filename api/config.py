@@ -34,6 +34,8 @@ class Settings:
         self.cors_origins = [origin.strip() for origin in cors_raw.split(",") if origin.strip()]
         verify_raw = os.getenv("HUBSPOT_VERIFY_SSL", "true").strip().lower()
         self.hubspot_verify_ssl = verify_raw not in {"0", "false", "no", "off"}
+        llm_verify_raw = os.getenv("LLM_VERIFY_SSL", "true").strip().lower()
+        self.llm_verify_ssl = llm_verify_raw not in {"0", "false", "no", "off"}
 
 
 @lru_cache

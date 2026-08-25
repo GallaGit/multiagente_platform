@@ -2,6 +2,14 @@
 
 Identidad, mercado y oferta de **este** nicho. Principios de empresa: [docs/CONTEXT.md](../../CONTEXT.md).
 
+## Problema activo
+
+> Ancla operativa: [`.agents/rules/PROBLEMA.md`](../../../.agents/rules/PROBLEMA.md) · protocolo: [`.agents/rules/ALINEACION.md`](../../../.agents/rules/ALINEACION.md).
+
+**Dolor prioritario:** leads sin dueño, respuesta tardía y pérdida de trazabilidad entre canal y CRM (D07, D19, D20).
+
+**Oferta:** Sprint de Orquestación de Leads — origen, responsable, SLA, siguiente acción y resultado medible. No captación, no bot de ventas, no sustituir el CRM.
+
 ## Propósito en este nicho
 
 Empresa digital especializada en **optimización de procesos para inmobiliarias en España**.
@@ -74,8 +82,8 @@ Completado:
 
 Pendiente inmediato:
 
-1. crear una cuenta Witei y ejecutar la prueba real de Smart Inbox;
-2. registrar resultados de alta, duplicado, asignación y datos insuficientes;
+1. cerrar validación técnica en lab HubSpot (3 casos: nuevo, duplicado, datos insuficientes);
+2. documentar baseline y métricas en panel Leads;
 3. realizar discovery con agencias del ICP;
 4. confirmar problema pagable, baseline y acceso técnico;
-5. proponer y cerrar un piloto pagado.
+5. proponer y cerrar un piloto pagado (CRM del cliente en producción).

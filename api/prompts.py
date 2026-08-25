@@ -22,7 +22,7 @@ def load_orchestrator_prompt(
         niche_present=niche_present
     )
     listing = format_agent_list(routable)
-    names = "|".join(routable) if routable else "business"
+    names = "|".join(routable) if routable else "backend"
     text = template.replace(AGENTS_PLACEHOLDER, listing or "- (ningún agente activo)")
     text = text.replace("{{AGENT_NAMES}}", names)
     return text

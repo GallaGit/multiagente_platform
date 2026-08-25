@@ -1,8 +1,16 @@
 # Multiagent Business
 
-MVP unificado: **dashboard glassmorphism** + **orquestación de leads (HubSpot)** + **agentes internos** (research, business, developer).
+**Problema que resolvemos:** en agencias inmobiliarias (ICP-01), los leads entran por portal/web/email y a menudo quedan sin dueño, SLA ni siguiente acción trazable en el CRM — respuesta tardía, duplicados y seguimiento abandonado.
 
-El nicho activo (inmobiliaria) vive en [`docs/nichos/inmobiliaria/`](docs/nichos/inmobiliaria/). El brief del producto vendible está en [`docs/nichos/inmobiliaria/mvp/`](docs/nichos/inmobiliaria/mvp/).
+**Producto activo:** [Sprint de Orquestación de Leads](docs/nichos/inmobiliaria/Orquestacion-Leads-Agencias/Oferta/Ofertas/Servicio-Profesional.md) — cada lead del alcance con origen, responsable, SLA, siguiente acción y resultado medible.
+
+Norte corto para agentes y decisiones: [`.agents/rules/PROBLEMA.md`](.agents/rules/PROBLEMA.md) · protocolo: [`.agents/rules/ALINEACION.md`](.agents/rules/ALINEACION.md).
+
+Nicho e investigación: [`docs/nichos/inmobiliaria/`](docs/nichos/inmobiliaria/). Brief técnico: [`docs/nichos/inmobiliaria/mvp/`](docs/nichos/inmobiliaria/mvp/).
+
+## Laboratorio en este repo
+
+Dashboard + API + agentes internos validan la orquestación en local con **HubSpot** (Private App + Contacts + propiedades custom). Canal simulado vía `/leads/ingest` y `/webhooks/lead`. No redefinen el problema ni son el CRM que se vende a agencias españolas (Witei/Inmovilla en entrega cliente).
 
 ## Qué incluye
 
@@ -12,9 +20,7 @@ El nicho activo (inmobiliaria) vive en [`docs/nichos/inmobiliaria/`](docs/nichos
 | **Panel Agentes** (`/agentes`) | Chat orquestador + research ICP vía Groq |
 | **API** | FastAPI: `/leads/*`, `/webhooks/lead`, `/chat`, `/research` |
 
-HubSpot es el **CRM de laboratorio** (sustituto operativo de Witei mientras no haya cuenta inmobiliaria real).
-
-> **Nota dashboard:** sin filtro, los KPIs cuentan **contactos del portal HubSpot** (hasta 100), no solo leads creados por el MVP. Los ingestados por el orquestador llevan campos custom (`lead_origen`, `lead_estado`, `siguiente_accion`, etc.).
+> **Nota dashboard:** por defecto los KPIs cuentan **solo leads MVP** (contactos con `lead_origen`). Activa “Incluir todos los contactos HubSpot” para debug. Baseline: botón en panel o `POST /leads/baseline`. Ver [06-metricas](docs/nichos/inmobiliaria/mvp/06-metricas.md).
 
 ## Arquitectura
 
@@ -53,6 +59,7 @@ Completa `.env` (nunca commitear `.env`):
 LLM_API_KEY=tu_clave_groq
 LLM_PROVIDER=groq
 LLM_MODEL=openai/gpt-oss-120b
+LLM_VERIFY_SSL=true             # false en Windows si falla SSL local
 HUBSPOT_ACCESS_TOKEN=pat-eu1-...
 HUBSPOT_PORTAL_ID=              # opcional
 HUBSPOT_VERIFY_SSL=true         # false en Windows si falla SSL local
@@ -124,6 +131,10 @@ curl -X POST http://127.0.0.1:8000/leads/ingest \
 curl http://127.0.0.1:8000/leads
 curl http://127.0.0.1:8000/leads/metrics
 curl http://127.0.0.1:8000/leads/exceptions
+curl -X POST http://127.0.0.1:8000/leads/baseline \
+  -H "Content-Type: application/json" \
+  -d '{"note":"Lab día 0","mvp_only":true}'
+curl http://127.0.0.1:8000/leads/baseline
 ```
 
 ## Tests
@@ -153,7 +164,8 @@ Leads usan HubSpot mockeado; no requieren token real.
 
 - Sin auth en API/UI (solo local).
 - Sin Docker en este repo.
-- Panel Leads lista contactos HubSpot (no solo leads MVP) hasta filtrar por campos custom.
+- **No listo para producción SaaS** — ver [docs/READINESS.md](docs/READINESS.md).
+- Métricas MVP filtradas por `lead_origen` (default); baseline local en `data/baseline.json`.
 - Tasks nativas opcionales si el portal no expone el scope.
 - Witei/Inmovilla = piloto en cuenta del cliente, no este laboratorio.
 - Research no hace outreach; cumplimiento RGPD/LSSI manual.

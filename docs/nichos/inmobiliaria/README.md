@@ -12,6 +12,7 @@ Negocio del nicho: [`CONTEXTO.md`](CONTEXTO.md).
 | [`CONTEXTO.md`](CONTEXTO.md) | Identidad, ICP, problemas y estrategia del nicho |
 | [`Orquestacion-Leads-Agencias/`](Orquestacion-Leads-Agencias/) | Investigación y oferta (fuente de verdad de mercado) |
 | [`mvp/`](mvp/) | Brief técnico del Sprint de Orquestación de Leads |
+| [`operacion/`](operacion/) | Checklists discovery 90d y piloto pagado |
 | [`roadmap/producto.md`](roadmap/producto.md) | Cadena Diagnóstico → Sprint → SaaS |
 | [`runtime/icp-research.md`](runtime/icp-research.md) | Rúbrica que inyecta el Research Agent |
 
@@ -29,8 +30,14 @@ Cadena: `Diagnóstico → Sprint de Leads → Automatizaciones → Gestionado �
 
 ## Siguiente paso
 
-1. Prueba en cuenta real Witei ([mvp/08](mvp/08-prueba-tecnica-witei.md)).
-2. Lista ICP: `POST /research` o `python -m api.research Valencia --limit 15`.
-3. Discovery comercial ([plan 90 días](Orquestacion-Leads-Agencias/Estrategia-Comercial/06-Plan-comercial-90-dias.md)).
+1. ~~Cerrar 3 casos demo HubSpot~~ ([08-prueba-tecnica-hubspot.md](mvp/08-prueba-tecnica-hubspot.md)).
+2. ~~Baseline/métricas en panel Leads~~ ([06-metricas.md](mvp/06-metricas.md)).
+3. Discovery comercial — [CHECKLIST-discovery-90d.md](operacion/CHECKLIST-discovery-90d.md) · [plan 90 días](Orquestacion-Leads-Agencias/Estrategia-Comercial/06-Plan-comercial-90-dias.md).
+4. Lista ICP: `POST /research` o panel Research.
+5. Piloto pagado — [CHECKLIST-piloto-pagado.md](operacion/CHECKLIST-piloto-pagado.md) (CRM del cliente en producción).
+
+Readiness: [docs/READINESS.md](../../READINESS.md).
+
+Última sesión: [operacion/SESION-2026-08-26.md](operacion/SESION-2026-08-26.md).
 
 Plataforma interna (multi-nicho): [docs/plataforma-interna](../../plataforma-interna/).

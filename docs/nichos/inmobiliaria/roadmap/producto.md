@@ -17,9 +17,18 @@ Decisión de portafolio: [Resumen ejecutivo](../Orquestacion-Leads-Agencias/Ofer
 | Frente | Estado |
 |---|---|
 | Investigación de mercado / ICP / oferta | Lista en `Orquestacion-Leads-Agencias/` |
+| Spec técnica del sprint | Lista en [`mvp/`](../mvp/); **lab HubSpot operativo** |
+| Validación técnica dev (lab) | En curso — 3 casos + métricas ([08-prueba-tecnica-hubspot.md](../mvp/08-prueba-tecnica-hubspot.md)) |
+| Prueba Witei cuenta real | **Diferida** — solo con cliente/piloto en producción |
 | Validación comercial (entrevistas, piloto) | Pendiente — [plan 90 días](../Orquestacion-Leads-Agencias/Estrategia-Comercial/06-Plan-comercial-90-dias.md) |
-| Spec técnica del sprint | Lista en [`mvp/`](../mvp/); prueba escritorio Witei = **GO condicionado** (Smart Inbox) — [08](../mvp/08-prueba-tecnica-witei.md) |
-| Plataforma interna (`docs/plataforma-interna/`) | Fase posterior; **no sustituye** este roadmap |
+| Plataforma interna (`docs/plataforma-interna/`) | Fase 1 delivery cerrada; fases 2–6 posteriores |
+
+## Dos capas de CRM
+
+| Capa | CRM | Cuándo |
+|---|---|---|
+| **Lab dev (este repo)** | HubSpot Private App | Validar orquestación sin cuenta Witei |
+| **Entrega cliente (España)** | Witei / Inmovilla / otro del cliente | Piloto pagado en producción |
 
 ## Relación con la plataforma interna
 

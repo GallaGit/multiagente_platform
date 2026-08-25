@@ -2,69 +2,64 @@
 
 Valores por defecto del brief; se ajustan con el cliente en el diagnóstico. Toda regla tiene **owner humano**.
 
+En el **lab HubSpot** estas reglas están implementadas en [`api/leads/orchestrator.py`](../../../api/leads/orchestrator.py).  
+En **entrega cliente** (Witei/Inmovilla) equivalentes vía reglas nativas del CRM — ver [08-prueba-tecnica-witei.md](08-prueba-tecnica-witei.md).
+
 ## 1. Entrada
 
-- Solo el canal acordado en el alcance.
+- Solo el canal acordado en el alcance (lab: `/leads/ingest`).
 - Origen obligatorio (`origen` + `origen_ref` si existe).
-- Si faltan email **y** teléfono → `DATOS_INSUFICIENTES` (no asignar).
+- Si faltan email **y** teléfono → `DATOS_INSUFICIENTES` (no asignar owner).
 
 ## 2. Deduplicación
 
 | Prioridad de clave | Uso |
 |---|---|
-| 1. Email normalizado | Match fuerte |
+| 1. Email normalizado | Match fuerte → update contacto existente |
 | 2. Teléfono E.164 | Match fuerte |
 | 3. `origen` + `origen_ref` | Match de evento |
 
-- Ventana típica: 30 días (configurable).
-- Si match: actualizar registro existente; conservar historial; no crear segundo responsable salvo regla explícita.
-- Si conflicto (dos contactos distintos con mismo teléfono): `DUPLICADO_CONFLICTO` → cola.
+- Si match: actualizar registro existente; conservar `hubspot_owner_id` existente; no crear segundo responsable.
+- Implementación: `HubSpotClient.find_existing_contact` + `update_contact`.
 
 ## 3. Reparto (dueño)
 
-Opciones (elegir una por piloto):
-
-| Modo | Cuándo |
+| Modo (lab) | Implementación |
 |---|---|
-| Round-robin entre agentes activos | Solo si el CRM/API lo permite; en Witei MVP **no** asumir API |
-| Por zona / cartera de inmuebles | Compatible con regla nativa “responsable del inmueble” (Smart Inbox) |
-| Coordinador / Delegado / admin | Alinear con [orden nativo Witei](08-prueba-tecnica-witei.md) |
-| Cola única a responsable de 1ª respuesta | Equipos pequeños; configurar Coordinador en Witei |
+| Round-robin entre owners HubSpot | `pick_next_owner()` sobre lista de owners del portal |
+| Lista fija | `ROUND_ROBIN_OWNER_IDS` en `.env` (opcional) |
 
-En Witei sin API Clientes: **diseñar el reparto compatible con reglas nativas**; complementar con alertas si hace falta reasignación post-SLA.
-
-- Fuera de horario laboral: acumular y asignar al abrir; o guardar en cola `nuevo` hasta apertura (definir con cliente).
-- No asignar a usuarios inactivos / de vacaciones (lista mantenida por el cliente).
+- Sin owners en HubSpot → excepción (no asignar a ciegas).
+- En Witei cliente: reglas nativas Smart Inbox / Coordinador — ver doc Witei.
 
 ## 4. SLA
 
-| Evento | Default sugerido |
+| Evento | Default (lab) |
 |---|---|
-| Primera respuesta / intento registrado | ≤ 15–60 min en horario (fijar uno) |
-| Sin dueño tras alta | ≤ 5–15 min |
+| Primera respuesta / intento registrado | `SLA_MINUTES` en `.env` (default 60) |
+| Sin dueño tras alta | No aplica si round-robin asigna en ingest |
 
-Incumplimiento → `SLA_ROTO` → reasignación o escalado a responsable de ops.
+Incumplimiento → visible en métricas / cola; escalado manual en MVP.
 
 ## 5. Siguiente acción
 
-Tras asignar, obligatorio:
+Tras asignar (lead nuevo):
 
-- Tipo (llamar, email, cualificar, agendar visita, otro)
-- Fecha/hora objetivo
-- Visible en CRM
+- Texto en `siguiente_accion` (p. ej. “Contactar lead en 1 h”).
+- Tarea HubSpot opcional si el scope `crm.objects.tasks.write` está disponible.
 
 Sin siguiente acción → tratar como excepción operativa.
 
 ## 6. Reasignación y escalado
 
-1. Alerta al dueño actual.
-2. Si no hay actividad en X minutos tras SLA: reasignar según modo de reparto.
-3. Segunda ruptura en 24 h: escalar a owner del proceso (gerente/ops).
+1. Alerta al dueño actual (fuera de automatización MVP lab).
+2. PATCH `/leads/{id}` para resolver excepciones manualmente desde panel.
+3. Escalado a ops/gerente: proceso humano documentado en manual.
 
 ## 7. Cola humana
 
-Vista única (filtro CRM o tablero) con códigos de [03-modelo-datos.md](03-modelo-datos.md).  
-Nadie cierra una excepción sin dejar resultado o nueva siguiente acción.
+`GET /leads/exceptions` — contactos con `lead_estado=excepcion` o `exception_code` presente.  
+Panel `/` muestra cola. Nadie cierra excepción sin dejar resultado o nueva siguiente acción.
 
 ## 8. Lo que no hacen las reglas
 

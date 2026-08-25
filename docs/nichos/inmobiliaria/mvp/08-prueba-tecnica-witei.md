@@ -1,5 +1,8 @@
 # 08 — Prueba técnica Witei + canal
 
+> **Nota:** referencia de **mercado / entrega a cliente** (agencias ICP-01 en España). **No es el camino activo de este repo.**  
+> Lab dev activo: [08-prueba-tecnica-hubspot.md](08-prueba-tecnica-hubspot.md).
+
 **Fecha:** 12-08-2026  
 **Tipo:** prueba de escritorio sobre documentación oficial (sin cuenta API habilitada ni sandbox propio).  
 **Objetivo:** cerrar el checklist de [04-integraciones.md](04-integraciones.md) con evidencia pública y decisión go/no-go.

@@ -63,7 +63,6 @@ def _resolve_owner_ids(client: HubSpotClient) -> list[str]:
     if settings.round_robin_owner_ids:
         return settings.round_robin_owner_ids
 
-    global _round_robin
     if not _round_robin.owner_ids:
         owners = client.list_owners()
         _round_robin.owner_ids = [owner.id for owner in owners if owner.id]
@@ -74,7 +73,6 @@ def pick_next_owner(client: HubSpotClient) -> str | None:
     owner_ids = _resolve_owner_ids(client)
     if not owner_ids:
         return None
-    global _round_robin
     _round_robin.owner_ids = owner_ids
     return _round_robin.next_owner()
 
@@ -276,12 +274,14 @@ def list_leads(
     estado: str | None = None,
     exception_code: str | None = None,
     limit: int = 100,
+    mvp_only: bool = True,
 ) -> list[LeadResponse]:
     hubspot = client or HubSpotClient()
     contacts = hubspot.list_contacts(
         estado=estado,
         exception_code=exception_code,
         limit=limit,
+        mvp_only=mvp_only,
     )
     owners = _owners_map(hubspot)
     leads = [
@@ -295,14 +295,26 @@ def list_leads(
     return leads
 
 
-def list_exceptions(client: HubSpotClient | None = None) -> list[LeadResponse]:
-    leads = list_leads(client, estado=LeadEstado.EXCEPCION.value)
+def list_exceptions(
+    client: HubSpotClient | None = None,
+    *,
+    mvp_only: bool = True,
+) -> list[LeadResponse]:
+    leads = list_leads(
+        client,
+        estado=LeadEstado.EXCEPCION.value,
+        mvp_only=mvp_only,
+    )
     return [lead for lead in leads if lead.exception_code]
 
 
-def compute_metrics(client: HubSpotClient | None = None):
+def compute_metrics(
+    client: HubSpotClient | None = None,
+    *,
+    mvp_only: bool = True,
+):
     hubspot = client or HubSpotClient()
-    leads = list_leads(hubspot)
+    leads = list_leads(hubspot, mvp_only=mvp_only)
     return hubspot.build_metrics(leads)
 
 

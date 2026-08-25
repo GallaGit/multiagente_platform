@@ -1,83 +1,76 @@
 # 04 — Integraciones
 
-Stack de referencia: **Witei** + **1 canal** + **Smart Inbox** (email) + **n8n/Make/Zapier** como generador/reenviador.  
-Prueba técnica de escritorio: [08-prueba-tecnica-witei.md](08-prueba-tecnica-witei.md) (2026-08-12).
+Stack del **laboratorio dev**: **HubSpot** + **canal simulado** (API).  
+Prueba activa: [08-prueba-tecnica-hubspot.md](08-prueba-tecnica-hubspot.md).
 
-## Arquitectura de implantación (post-prueba)
+Referencia mercado España (entrega cliente): [08-prueba-tecnica-witei.md](08-prueba-tecnica-witei.md).
+
+## Arquitectura del lab (este repo)
 
 ```text
-Canal (portal email | form web)
+Canal simulado (POST /leads/ingest | POST /webhooks/lead)
         ↓
-n8n / Make / Zapier  (opcional: normalizar → email formato Smart Inbox)
+FastAPI — api/leads/orchestrator.py
         ↓
-Witei Smart Inbox  (*@inbox.witei.com)
+HubSpot CRM API (Contacts + propiedades custom)
         ↓
-Contacto + asignación nativa + tarea "Solicitud de Contacto"
-        ↓
-Vistas CRM + alertas humanas (excepciones / SLA)
+Dashboard React (/) — KPIs, tabla, cola excepciones
 ```
 
-**API Clientes Witei:** no disponible de inmediato (solicitud 2–3 semanas; experimental). No es dependencia del primer piloto.  
-Código propio solo si hace falta un endpoint receptor o normalizador de emails/payloads.
+## CRM — HubSpot (lab activo)
 
-## CRM — Witei (referencia)
-
-| Tema | Estado tras prueba |
+| Tema | Estado |
 |---|---|
-| Rol | Sistema de registro del lead |
-| Mecanismo MVP | **Smart Inbox** (email), no REST público abierto |
-| API Clientes | Bajo petición; token por usuario; docs en cuenta; experimental |
-| Webhooks oficiales | Salientes de **inmuebles**, no ingest de leads |
-| Necesidades del sprint | Alta contacto + dueño (reglas nativas) + tarea solicitud; SLA/cola vía proceso + vistas |
-| Riesgos | Parseo email frágil; límites de contactos del plan; sin listados REST verificados; API experimental |
+| Rol | Sistema de registro del lead (Contacts) |
+| Auth | Private App token (`HUBSPOT_ACCESS_TOKEN`) |
+| Alta contacto | `POST /crm/v3/objects/contacts` |
+| Update / dedupe | Search by email/phone + `PATCH` |
+| Owner | `hubspot_owner_id` + round-robin en orchestrator |
+| SLA / estado | Propiedades custom (`lead_estado`, `sla_primera_respuesta_at`, etc.) |
+| Tareas | Opcional (`crm.objects.tasks.write`); si no hay scope, contacto se crea igual |
+| Setup props | `python -m api.hubspot_setup` |
 
-### Checklist de prueba técnica (Witei)
+### Checklist de prueba técnica (HubSpot lab)
 
-- [x] Auth documentada — **sí**, pero API Clientes no inmediata (2–3 semanas + experimental)
-- [x] Crear lead/contacto — **sí** vía Smart Inbox
-- [x] Asignar responsable — **parcial** (reglas nativas documentadas)
-- [x] Tarea / siguiente acción — **parcial** (“Solicitud de Contacto”)
-- [ ] Leer/listar leads vía API — **no verificado** (usar vistas CRM)
-- [x] Webhook — **sí saliente inmuebles**; **no** para alta de leads
-- [x] Límites / campos mínimos — email o teléfono; Smart Inbox cuenta en cupo contactos
-- [x] Exportación / salida — XML / export documentados a nivel producto
-- [ ] Prueba en **cuenta real** (3 emails: nuevo, duplicado, insuficiente) — pendiente operativo
+- [x] Auth Private App — token en `.env`
+- [x] Crear contacto — vía `/leads/ingest`
+- [x] Asignar responsable — round-robin owners HubSpot
+- [x] Siguiente acción + SLA — props custom
+- [x] Leer/listar leads — `GET /leads`, `/leads/exceptions`
+- [x] Webhook equivalente — `POST /webhooks/lead`
+- [x] Campos mínimos — email o teléfono; excepción si faltan ambos
+- [x] Propiedades custom — `hubspot_setup` ejecutado
+- [x] 3 casos operativos documentados — [08-prueba-tecnica-hubspot.md](08-prueba-tecnica-hubspot.md) PASS 2026-08-26
 
-Detalle y go/no-go: [08-prueba-tecnica-witei.md](08-prueba-tecnica-witei.md).
+Detalle y go/no-go: [08-prueba-tecnica-hubspot.md](08-prueba-tecnica-hubspot.md).
 
-## Canal — uno solo
+## Canal — simulado (lab)
 
-| Opción | Entrada | Camino verificado |
-|---|---|---|
-| A — Portal | Notificación email del portal → Smart Inbox | Documentado por Witei |
-| B — Web | Formulario → email con formato Smart Inbox (directo o vía iPaaS) | Formato oficial publicado |
+| Endpoint | Uso |
+|---|---|
+| `POST /leads/ingest` | Ingesta manual / demo portal |
+| `POST /webhooks/lead` | Alias webhook para integraciones futuras |
+
+Payload: ver [`api/leads/models.py`](../../../api/leads/models.py) (`LeadIngestRequest`).
 
 WhatsApp personal / WA Business API: **fuera** del primer brief.
 
-### Checklist de prueba técnica (canal)
+### Checklist canal simulado
 
-- [x] Payload de ejemplo (especificación oficial) — ver [08](08-prueba-tecnica-witei.md)
-- [x] Campos nombre, contacto, ref — en formato Smart Inbox
-- [x] Identificador origen (`Referencia`) — case-sensitive vs cartera Witei
-- [x] Duplicados — fusión si mismo email/teléfono; si no, ficha nueva
-- [ ] Latencia medida en cuenta real — pendiente
-- [x] Consentimiento — MVP no exige auto-respuesta; auto-reply es opt-in de plan
+- [x] Payload JSON con nombre, email, teléfono, origen, inmueble_ref
+- [x] Campos nombre, contacto, ref
+- [x] Duplicados — mismo email → update, mismo owner
+- [x] Datos insuficientes — solo nombre → `DATOS_INSUFICIENTES`
+- [ ] Latencia medida en corrida real — pendiente registro en 08
 
-## Variante Inmovilla
+## Entrega cliente (referencia, no lab)
 
-Mismo flujo lógico ([02-flujo.md](02-flujo.md)). Requiere **otra** prueba técnica (API/conectores Inmovilla). No mezclar ambos CRM en el mismo piloto.
+En agencias españolas el canal suele ser email de portal → Smart Inbox (Witei) o conector Inmovilla. Ver [08-prueba-tecnica-witei.md](08-prueba-tecnica-witei.md). **Diferida** hasta piloto con cuenta del cliente.
 
-## Límites conocidos
-
-- Sin conector oficial Make; Zapier documentado vía webhooks salientes + email a Smart Inbox.
-- Webhooks de inmuebles: timeout 15 s, reintentos, ventana ~5 min, desactivación si falla el endpoint.
-- No asumir sync bidireccional portal↔CRM más allá de pasarelas/Smart Inbox del cliente.
-
-## Decisión de go/no-go técnico
+## Decisión de go/no-go técnico (lab)
 
 | Resultado | Decisión |
 |---|---|
-| Smart Inbox usable en cuenta piloto | **GO** — camino MVP |
-| Cliente exige REST sin espera de API Clientes | **NO GO** / reformular |
-| Solo export manual semanal | Reformular oferta semi-manual |
-| API Clientes habilitada y estable | Ampliar automatización (listados, tareas custom) |
+| HubSpot ingest + owner + SLA + excepciones OK | **GO** — lab validado |
+| Falta token o props custom | Configurar `.env` + `hubspot_setup` |
+| Cliente exige Witei sin API | Reformular a Smart Inbox en su cuenta (piloto) |

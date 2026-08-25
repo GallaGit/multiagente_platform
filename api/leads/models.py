@@ -70,6 +70,34 @@ class LeadMetricsResponse(BaseModel):
     pct_con_siguiente_accion: float
     excepciones_abiertas: int
     sla_rotos: int
+    mediana_tiempo_respuesta_min: float | None = None
+
+
+class MetricsDelta(BaseModel):
+    total_leads: int
+    pct_con_responsable: float
+    pct_con_siguiente_accion: float
+    excepciones_abiertas: int
+    sla_rotos: int
+    mediana_tiempo_respuesta_min: float | None = None
+
+
+class BaselineSnapshot(BaseModel):
+    captured_at: datetime
+    note: str | None = None
+    metrics: LeadMetricsResponse
+    mvp_only: bool = True
+
+
+class BaselineCaptureRequest(BaseModel):
+    note: str | None = None
+    mvp_only: bool = True
+
+
+class MetricsDashboardResponse(BaseModel):
+    current: LeadMetricsResponse
+    baseline: BaselineSnapshot | None = None
+    delta: MetricsDelta | None = None
 
 
 class OwnerResponse(BaseModel):

@@ -5,11 +5,11 @@ from typing import Callable
 
 from api.niche import prefix_tokens, skip_tokens
 from api.prompts import load_orchestrator_prompt, load_system_prompt
-from api.registry import fallback_agent, is_active, routable_agents
-from api.research import run_research
-from api.search import SearchHit
+from api.registry import fallback_agent, routable_agents
 
 CompleteFn = Callable[[str, str], str]
+
+DELIVERY_AGENTS = frozenset({"frontend", "backend"})
 
 
 @dataclass
@@ -17,6 +17,7 @@ class OrchestrationResult:
     routed_to: str
     reply: str
     reason: str
+    documentation: str = ""
 
 
 def _extract_json(text: str) -> dict:
@@ -35,23 +36,30 @@ def parse_route(
     valid_agents: set[str] | None = None,
     *,
     fallback: str | None = None,
-) -> tuple[str, str]:
+) -> tuple[str, str, str]:
+    """Return (agent, reason, brief)."""
     allowed = valid_agents if valid_agents is not None else set(routable_agents())
     fallback_name = fallback if fallback is not None else fallback_agent()
     try:
         data = _extract_json(raw)
         agent = str(data.get("agent", "")).strip().lower()
         reason = str(data.get("reason", "")).strip() or "sin motivo"
+        brief = str(data.get("brief", "")).strip()
         if agent in allowed:
-            return agent, reason
+            return agent, reason, brief
         if agent:
             return (
                 fallback_name,
                 f"fallback: agente '{agent}' inactivo o desconocido",
+                brief,
             )
     except (json.JSONDecodeError, TypeError, AttributeError):
         pass
-    return fallback_name, "fallback: respuesta del orchestrator inválida"
+    return (
+        fallback_name,
+        "fallback: respuesta del orchestrator inválida",
+        "",
+    )
 
 
 def extract_cities(message: str) -> list[str]:
@@ -79,37 +87,39 @@ def extract_cities(message: str) -> list[str]:
     return cities
 
 
+def _agent_user_message(message: str, brief: str) -> str:
+    if not brief:
+        return message
+    return (
+        f"Encargo del usuario:\n{message}\n\n"
+        f"Brief del Orchestrator (especificación):\n{brief}"
+    )
+
+
 def run_chat(
     message: str,
     complete: CompleteFn,
     *,
-    search_hits: list[SearchHit] | None = None,
-    search_queries: list[str] | None = None,
     niche_present: bool | None = None,
 ) -> OrchestrationResult:
     routable = routable_agents(niche_present=niche_present)
     fallback = fallback_agent(niche_present=niche_present)
     orch_system = load_orchestrator_prompt(routable, niche_present=niche_present)
     route_raw = complete(orch_system, message)
-    agent, reason = parse_route(
+    agent, reason, brief = parse_route(
         route_raw, set(routable), fallback=fallback
     )
-
-    if agent == "research" and is_active("research", niche_present=niche_present):
-        cities = extract_cities(message) or ["España"]
-        result = run_research(
-            cities,
-            complete_fn=complete,
-            hits=search_hits,
-            queries=search_queries if search_queries is not None else (
-                [] if search_hits is not None else None
-            ),
-        )
-        reply = result.reply
-        if result.note not in reply:
-            reply = f"{reply}\n\n{result.note}"
-        return OrchestrationResult(routed_to=agent, reply=reply, reason=reason)
+    if agent not in DELIVERY_AGENTS:
+        agent = fallback if fallback in DELIVERY_AGENTS else "backend"
+        reason = f"fallback: agente no es frontend|backend ({reason})"
+        if not brief:
+            brief = "Brief no disponible; implementar el encargo con foco backend."
 
     agent_system = load_system_prompt(agent)
-    reply = complete(agent_system, message)
-    return OrchestrationResult(routed_to=agent, reply=reply, reason=reason)
+    reply = complete(agent_system, _agent_user_message(message, brief))
+    return OrchestrationResult(
+        routed_to=agent,
+        reply=reply,
+        reason=reason,
+        documentation=brief,
+    )

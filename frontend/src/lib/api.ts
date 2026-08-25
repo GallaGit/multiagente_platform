@@ -37,6 +37,29 @@ export interface LeadMetrics {
   pct_con_siguiente_accion: number;
   excepciones_abiertas: number;
   sla_rotos: number;
+  mediana_tiempo_respuesta_min: number | null;
+}
+
+export interface MetricsDelta {
+  total_leads: number;
+  pct_con_responsable: number;
+  pct_con_siguiente_accion: number;
+  excepciones_abiertas: number;
+  sla_rotos: number;
+  mediana_tiempo_respuesta_min: number | null;
+}
+
+export interface BaselineSnapshot {
+  captured_at: string;
+  note: string | null;
+  metrics: LeadMetrics;
+  mvp_only: boolean;
+}
+
+export interface MetricsDashboard {
+  current: LeadMetrics;
+  baseline: BaselineSnapshot | null;
+  delta: MetricsDelta | null;
 }
 
 export interface IngestResult {
@@ -57,6 +80,7 @@ export interface LeadIngestPayload {
 
 export interface ChatResponse {
   routed_to: string;
+  documentation: string;
   reply: string;
   reason: string;
 }
@@ -69,6 +93,10 @@ export interface ResearchResponse {
 }
 
 const API_BASE = "/api";
+
+function leadsQuery(mvpOnly: boolean) {
+  return mvpOnly ? "" : "?mvp_only=false";
+}
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${API_BASE}${path}`, {
@@ -90,9 +118,18 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
 export const api = {
   health: () => request<{ status: string }>("/health"),
-  getLeads: () => request<LeadListResponse>("/leads"),
-  getMetrics: () => request<LeadMetrics>("/leads/metrics"),
-  getExceptions: () => request<LeadListResponse>("/leads/exceptions"),
+  getLeads: (mvpOnly = true) =>
+    request<LeadListResponse>(`/leads${leadsQuery(mvpOnly)}`),
+  getMetrics: (mvpOnly = true) =>
+    request<MetricsDashboard>(`/leads/metrics${leadsQuery(mvpOnly)}`),
+  getExceptions: (mvpOnly = true) =>
+    request<LeadListResponse>(`/leads/exceptions${leadsQuery(mvpOnly)}`),
+  captureBaseline: (note?: string, mvpOnly = true) =>
+    request<BaselineSnapshot>("/leads/baseline", {
+      method: "POST",
+      body: JSON.stringify({ note: note ?? null, mvp_only: mvpOnly }),
+    }),
+  getBaseline: () => request<BaselineSnapshot>("/leads/baseline"),
   ingestLead: (payload: LeadIngestPayload) =>
     request<IngestResult>("/leads/ingest", {
       method: "POST",

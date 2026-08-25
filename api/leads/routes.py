@@ -1,14 +1,17 @@
 from fastapi import APIRouter, HTTPException, Query
 
 from api.config import get_settings
+from api.leads.baseline import build_dashboard, capture_baseline, load_baseline
 from api.leads.hubspot import HubSpotClient, HubSpotError
 from api.leads.models import (
+    BaselineCaptureRequest,
+    BaselineSnapshot,
     IngestResult,
     LeadIngestRequest,
     LeadListResponse,
-    LeadMetricsResponse,
     LeadResponse,
     LeadUpdateRequest,
+    MetricsDashboardResponse,
     OwnerResponse,
 )
 from api.leads.orchestrator import (
@@ -52,6 +55,7 @@ def get_leads(
     estado: str | None = Query(default=None),
     exception_code: str | None = Query(default=None),
     limit: int = Query(default=100, ge=1, le=100),
+    mvp_only: bool = Query(default=True),
 ) -> LeadListResponse:
     try:
         items = list_leads(
@@ -59,24 +63,52 @@ def get_leads(
             estado=estado,
             exception_code=exception_code,
             limit=limit,
+            mvp_only=mvp_only,
         )
     except HubSpotError as exc:
         raise _handle_hubspot_error(exc) from exc
     return LeadListResponse(items=items, total=len(items))
 
 
-@router.get("/metrics", response_model=LeadMetricsResponse)
-def get_metrics() -> LeadMetricsResponse:
+@router.get("/metrics", response_model=MetricsDashboardResponse)
+def get_metrics(
+    mvp_only: bool = Query(default=True),
+) -> MetricsDashboardResponse:
     try:
-        return compute_metrics(_hubspot_client())
+        current = compute_metrics(_hubspot_client(), mvp_only=mvp_only)
     except HubSpotError as exc:
         raise _handle_hubspot_error(exc) from exc
+    baseline = load_baseline()
+    return build_dashboard(current, baseline)
+
+
+@router.get("/baseline", response_model=BaselineSnapshot)
+def get_baseline() -> BaselineSnapshot:
+    snapshot = load_baseline()
+    if snapshot is None:
+        raise HTTPException(status_code=404, detail="Baseline no capturado")
+    return snapshot
+
+
+@router.post("/baseline", response_model=BaselineSnapshot)
+def post_baseline(body: BaselineCaptureRequest) -> BaselineSnapshot:
+    try:
+        metrics = compute_metrics(_hubspot_client(), mvp_only=body.mvp_only)
+    except HubSpotError as exc:
+        raise _handle_hubspot_error(exc) from exc
+    return capture_baseline(
+        metrics,
+        note=body.note,
+        mvp_only=body.mvp_only,
+    )
 
 
 @router.get("/exceptions", response_model=LeadListResponse)
-def get_exceptions() -> LeadListResponse:
+def get_exceptions(
+    mvp_only: bool = Query(default=True),
+) -> LeadListResponse:
     try:
-        items = list_exceptions(_hubspot_client())
+        items = list_exceptions(_hubspot_client(), mvp_only=mvp_only)
     except HubSpotError as exc:
         raise _handle_hubspot_error(exc) from exc
     return LeadListResponse(items=items, total=len(items))

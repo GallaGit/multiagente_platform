@@ -1,0 +1,13 @@
+{
+  "captured_at": "2026-01-01T12:00:00+00:00",
+  "note": "Ejemplo: captura inicial del lab antes de operar 1-2 semanas",
+  "mvp_only": true,
+  "metrics": {
+    "total_leads": 0,
+    "pct_con_responsable": 0.0,
+    "pct_con_siguiente_accion": 0.0,
+    "excepciones_abiertas": 0,
+    "sla_rotos": 0,
+    "mediana_tiempo_respuesta_min": null
+  }
+}

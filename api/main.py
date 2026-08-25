@@ -32,6 +32,7 @@ class ChatRequest(BaseModel):
 
 class ChatResponse(BaseModel):
     routed_to: str
+    documentation: str
     reply: str
     reason: str
 
@@ -83,6 +84,7 @@ def chat(body: ChatRequest) -> ChatResponse:
 
     return ChatResponse(
         routed_to=result.routed_to,
+        documentation=result.documentation,
         reply=result.reply,
         reason=result.reason,
     )

@@ -3,22 +3,32 @@
     "orchestrator": {
       "enabled": true,
       "requires_niche": false,
-      "role": "Decide qué agente debe responder. No implementa."
+      "role": "Documenta el encargo de delivery (brief) y delega a frontend o backend."
+    },
+    "frontend": {
+      "enabled": true,
+      "requires_niche": false,
+      "role": "UI: paneles, demos, layout, estilos y UX del control operativo del sprint."
+    },
+    "backend": {
+      "enabled": true,
+      "requires_niche": false,
+      "role": "API, datos, webhooks, conectores CRM/canal y lógica del sprint."
     },
     "developer": {
-      "enabled": true,
+      "enabled": false,
       "requires_niche": false,
-      "role": "Requisitos técnicos, arquitectura, código, estimaciones de esfuerzo."
+      "role": "Legacy. Requisitos técnicos, arquitectura, código."
     },
     "business": {
-      "enabled": true,
+      "enabled": false,
       "requires_niche": false,
-      "role": "Propuestas, precios orientativos, organización comercial, discovery."
+      "role": "Legacy. Propuestas, precios, discovery comercial."
     },
     "research": {
       "enabled": true,
       "requires_niche": true,
-      "role": "Buscar cuentas con oportunidad de proceso (ICP del conocimiento activo). Nunca envía mensajes."
+      "role": "Buscar cuentas con oportunidad de proceso (ICP del conocimiento activo). Nunca envía mensajes. Solo vía POST /research."
     }
   }
 }

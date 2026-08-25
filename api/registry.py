@@ -12,7 +12,8 @@ from api.niche import has_valid_niche
 
 REGISTRY_PATH = ROOT_DIR / "agents" / "registry.json"
 ORCHESTRATOR = "orchestrator"
-FALLBACK_AGENT = "business"
+RESEARCH = "research"
+FALLBACK_AGENT = "backend"
 
 
 @dataclass(frozen=True)
@@ -84,12 +85,13 @@ def routable_agents(
     specs: dict[str, AgentSpec] | None = None,
     niche_present: bool | None = None,
 ) -> dict[str, AgentSpec]:
+    """Agentes del módulo delivery para POST /chat. Excluye research (POST /research)."""
     return {
         name: spec
         for name, spec in active_agents(
             specs=specs, niche_present=niche_present
         ).items()
-        if name != ORCHESTRATOR
+        if name not in {ORCHESTRATOR, RESEARCH}
     }
 
 

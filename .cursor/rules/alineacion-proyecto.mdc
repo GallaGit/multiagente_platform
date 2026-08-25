@@ -1,0 +1,23 @@
+---
+description: Cuestionar alineación con el problema del repo antes de implementar
+alwaysApply: true
+---
+
+# Alineación al problema del proyecto
+
+Antes de implementar, ampliar alcance o aceptar una petición de producto/plataforma:
+
+1. Leer [`.agents/rules/PROBLEMA.md`](../../.agents/rules/PROBLEMA.md) y [`.agents/rules/ALINEACION.md`](../../.agents/rules/ALINEACION.md).
+2. Clasificar la petición: `alineada` | `parcial` | `desviada`.
+3. Si es `alineada`, proceder.
+4. Si es `parcial` o `desviada`: **no implementar**. Debatir con la plantilla de `.agents/rules/ALINEACION.md` (por qué se desvía, alternativa alineada, qué hace falta para aceptar). Esperar confirmación explícita (“adelante”, “hazlo igual”, etc.).
+
+## Norte
+
+- Problema activo: leads sin dueño / respuesta tardía / sin trazabilidad en CRM (Sprint de Orquestación de Leads).
+- Prioridad: producto externo (sprint) > plataforma interna.
+- No construir multiagente genérico, memoria, LangGraph ni fases 2–6 de plataforma por defecto.
+
+## Filtro rápido
+
+¿Mejora *registro → owner → SLA → siguiente acción → excepción → métrica*? Si no → debate, no código.

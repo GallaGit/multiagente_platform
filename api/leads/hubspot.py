@@ -350,8 +350,16 @@ class HubSpotClient:
         estado: str | None = None,
         exception_code: str | None = None,
         limit: int = 100,
+        mvp_only: bool = True,
     ) -> list[dict[str, Any]]:
         filters: list[dict[str, Any]] = []
+        if mvp_only:
+            filters.append(
+                {
+                    "propertyName": "lead_origen",
+                    "operator": "HAS_PROPERTY",
+                }
+            )
         if estado:
             filters.append(
                 {
@@ -432,6 +440,24 @@ class HubSpotClient:
             is_duplicate=is_duplicate,
         )
 
+    @staticmethod
+    def _median_response_minutes(leads: list[LeadResponse]) -> float | None:
+        deltas: list[float] = []
+        for lead in leads:
+            if lead.created_at and lead.primera_respuesta_at:
+                minutes = (
+                    lead.primera_respuesta_at - lead.created_at
+                ).total_seconds() / 60
+                if minutes >= 0:
+                    deltas.append(minutes)
+        if len(deltas) < 2:
+            return None
+        deltas.sort()
+        mid = len(deltas) // 2
+        if len(deltas) % 2 == 1:
+            return round(deltas[mid], 1)
+        return round((deltas[mid - 1] + deltas[mid]) / 2, 1)
+
     def build_metrics(self, leads: list[LeadResponse]) -> LeadMetricsResponse:
         total = len(leads)
         if total == 0:
@@ -441,6 +467,7 @@ class HubSpotClient:
                 pct_con_siguiente_accion=0.0,
                 excepciones_abiertas=0,
                 sla_rotos=0,
+                mediana_tiempo_respuesta_min=None,
             )
 
         with_owner = sum(1 for lead in leads if lead.responsable_id)
@@ -464,4 +491,5 @@ class HubSpotClient:
             pct_con_siguiente_accion=round(with_action / total * 100, 1),
             excepciones_abiertas=exceptions,
             sla_rotos=sla_broken,
+            mediana_tiempo_respuesta_min=self._median_response_minutes(leads),
         )

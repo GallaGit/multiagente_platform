@@ -1,7 +1,12 @@
 # Plataforma interna — sistema operativo de la empresa
 
-> **Norte:** [docs/README.md](../README.md) · [nicho activo](../nichos/inmobiliaria/)  
+> **Norte del problema:** [`.agents/rules/PROBLEMA.md`](../../.agents/rules/PROBLEMA.md) · [ALINEACION](../../.agents/rules/ALINEACION.md)  
+> **Norte docs:** [docs/README.md](../README.md) · [nicho activo](../nichos/inmobiliaria/)  
 > **Flujo detallado:** [arquitectura-flujo.md](arquitectura-flujo.md)
+
+## Prioridad respecto al producto
+
+Esta capa es **secundaria** hasta tener piloto/pagado del Sprint de Orquestación de Leads. No compite con el producto externo: no ampliar fases 2–6, memoria ni orquestación de empresa por defecto. Solo lo que desbloquea entrega o venta del sprint.
 
 ## Propósito
 

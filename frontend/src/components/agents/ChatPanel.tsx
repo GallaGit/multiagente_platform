@@ -5,7 +5,7 @@ import { api } from "../../lib/api";
 interface ChatMessage {
   role: "user" | "assistant";
   content: string;
-  meta?: { routed_to?: string; reason?: string };
+  meta?: { routed_to?: string; reason?: string; documentation?: string };
 }
 
 export function ChatPanel() {
@@ -21,7 +21,11 @@ export function ChatPanel() {
         {
           role: "assistant",
           content: data.reply,
-          meta: { routed_to: data.routed_to, reason: data.reason },
+          meta: {
+            routed_to: data.routed_to,
+            reason: data.reason,
+            documentation: data.documentation,
+          },
         },
       ]);
       setInput("");
@@ -37,13 +41,16 @@ export function ChatPanel() {
 
   return (
     <div className="glass flex h-full min-h-[520px] flex-col p-5">
-      <h2 className="mb-4 text-lg font-semibold text-white">Chat orquestador</h2>
+      <h2 className="mb-4 text-lg font-semibold text-white">
+        Chat delivery
+      </h2>
 
       <div className="flex-1 space-y-3 overflow-y-auto pr-1">
         {messages.length === 0 && (
           <p className="text-sm text-slate-400">
-            Pregunta sobre discovery, integraciones, research o propuestas. El
-            orquestador enruta a research, business o developer.
+            Encargos técnicos del sprint: paneles/UI → frontend; API,
+            webhooks o conectores CRM → backend. El orchestrator documenta
+            un brief y delega. Research ICP usa el panel de Research.
           </p>
         )}
         {messages.map((msg, index) => (
@@ -57,9 +64,16 @@ export function ChatPanel() {
           >
             <p className="whitespace-pre-wrap">{msg.content}</p>
             {msg.meta?.routed_to && (
-              <p className="mt-2 text-xs text-cyan-300/80">
-                → {msg.meta.routed_to} · {msg.meta.reason}
-              </p>
+              <div className="mt-2 space-y-1 text-xs text-cyan-300/80">
+                <p>
+                  → {msg.meta.routed_to} · {msg.meta.reason}
+                </p>
+                {msg.meta.documentation && (
+                  <p className="text-slate-400">
+                    Brief: {msg.meta.documentation}
+                  </p>
+                )}
+              </div>
             )}
           </div>
         ))}
@@ -68,7 +82,7 @@ export function ChatPanel() {
       <form className="mt-4 flex gap-2" onSubmit={handleSubmit}>
         <input
           className="glass-input flex-1"
-          placeholder="Escribe tu mensaje…"
+          placeholder="Escribe un encargo de delivery…"
           value={input}
           onChange={(e) => setInput(e.target.value)}
         />

@@ -1,3 +1,4 @@
+import httpx
 from groq import Groq
 
 from api.config import get_settings
@@ -16,7 +17,8 @@ def complete(system: str, user: str) -> str:
             f"Unsupported LLM_PROVIDER={settings.llm_provider!r}; MVP only supports 'groq'"
         )
 
-    client = Groq(api_key=settings.llm_api_key)
+    http_client = httpx.Client(verify=settings.llm_verify_ssl)
+    client = Groq(api_key=settings.llm_api_key, http_client=http_client)
     try:
         response = client.chat.completions.create(
             model=settings.llm_model,
@@ -32,6 +34,8 @@ def complete(system: str, user: str) -> str:
         )
     except Exception as exc:  # noqa: BLE001 — surface provider errors as 502
         raise LLMError(str(exc)) from exc
+    finally:
+        http_client.close()
 
     content = response.choices[0].message.content
     if not content:

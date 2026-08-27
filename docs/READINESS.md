@@ -17,7 +17,7 @@ Veredicto explícito de qué está listo **hoy** con este repositorio y qué req
 |------|-----------|----------------|-----------------|
 | Orquestación leads | OK — HubSpot + `/leads/ingest` | Re-implantar en CRM cliente (Witei/Inmovilla/…) | N/A en este repo |
 | Auth / multi-tenant | No | N/A (cuenta única cliente) | Requerido |
-| Deploy / observabilidad | No (uvicorn local) | Manual, entrega proyecto | Requerido |
+| Deploy / observabilidad | No (uvicorn local o Docker Compose de lab) | Manual, entrega proyecto | Requerido |
 | Canal real | Simulado (JSON ingest) | Email/portal real del cliente | Por cliente |
 | RGPD / LSSI outreach | Manual | Contrato + DPA | Requerido |
 | Métricas baseline | OK — `POST/GET /leads/baseline`, panel delta | Medir en CRM cliente | Producto |

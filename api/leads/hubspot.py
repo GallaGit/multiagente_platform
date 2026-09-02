@@ -282,15 +282,50 @@ class HubSpotClient:
         results = data.get("results", [])
         return results[0] if results else None
 
+    def search_contact_by_origen_event(
+        self, origen: str, origen_ref: str
+    ) -> dict[str, Any] | None:
+        payload = {
+            "filterGroups": [
+                {
+                    "filters": [
+                        {
+                            "propertyName": "lead_origen",
+                            "operator": "EQ",
+                            "value": origen,
+                        },
+                        {
+                            "propertyName": "lead_origen_ref",
+                            "operator": "EQ",
+                            "value": origen_ref,
+                        },
+                    ]
+                }
+            ],
+            "properties": LEAD_PROPERTY_NAMES,
+            "limit": 1,
+        }
+        data = self._request("POST", "/crm/v3/objects/contacts/search", json=payload)
+        results = data.get("results", [])
+        return results[0] if results else None
+
     def find_existing_contact(
-        self, email: str | None, telefono: str | None
+        self,
+        email: str | None,
+        telefono: str | None,
+        origen: str | None = None,
+        origen_ref: str | None = None,
     ) -> dict[str, Any] | None:
         if email:
             found = self.search_contact_by_email(email)
             if found:
                 return found
         if telefono:
-            return self.search_contact_by_phone(telefono)
+            found = self.search_contact_by_phone(telefono)
+            if found:
+                return found
+        if origen and origen_ref:
+            return self.search_contact_by_origen_event(origen, origen_ref)
         return None
 
     def create_contact(self, properties: HubSpotContactProperties) -> dict[str, Any]:
@@ -394,6 +429,34 @@ class HubSpotClient:
         data = self._request("GET", "/crm/v3/objects/contacts", params=params)
         return data.get("results", [])
 
+    def list_contacts_with_exception_code(
+        self,
+        *,
+        limit: int = 100,
+        mvp_only: bool = True,
+    ) -> list[dict[str, Any]]:
+        filters: list[dict[str, Any]] = [
+            {
+                "propertyName": "exception_code",
+                "operator": "HAS_PROPERTY",
+            }
+        ]
+        if mvp_only:
+            filters.append(
+                {
+                    "propertyName": "lead_origen",
+                    "operator": "HAS_PROPERTY",
+                }
+            )
+        payload = {
+            "filterGroups": [{"filters": filters}],
+            "properties": LEAD_PROPERTY_NAMES,
+            "sorts": [{"propertyName": "createdate", "direction": "DESCENDING"}],
+            "limit": min(limit, 100),
+        }
+        data = self._request("POST", "/crm/v3/objects/contacts/search", json=payload)
+        return data.get("results", [])
+
     def contact_to_lead(
         self,
         contact: dict[str, Any],
@@ -472,9 +535,7 @@ class HubSpotClient:
 
         with_owner = sum(1 for lead in leads if lead.responsable_id)
         with_action = sum(1 for lead in leads if lead.siguiente_accion)
-        exceptions = sum(
-            1 for lead in leads if lead.estado == LeadEstado.EXCEPCION and lead.exception_code
-        )
+        exceptions = sum(1 for lead in leads if lead.exception_code)
         now = datetime.now(timezone.utc)
         sla_broken = sum(
             1

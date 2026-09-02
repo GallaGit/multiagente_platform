@@ -51,11 +51,25 @@ export function GlassShell() {
             <div className="flex items-center gap-2">
               <span
                 className={`h-2 w-2 rounded-full ${
-                  health.isSuccess ? "bg-emerald-400" : "bg-amber-400"
+                  health.isSuccess
+                    ? "bg-emerald-400"
+                    : health.isError
+                      ? "bg-rose-400"
+                      : "bg-amber-400"
                 }`}
               />
-              API {health.isSuccess ? "conectada" : "pendiente"}
+              API{" "}
+              {health.isSuccess
+                ? "conectada"
+                : health.isError
+                  ? "error"
+                  : "conectando…"}
             </div>
+            {health.isError && (
+              <p className="text-rose-300">
+                {(health.error as Error).message}
+              </p>
+            )}
             <p>HubSpot como CRM de laboratorio</p>
           </div>
         </aside>

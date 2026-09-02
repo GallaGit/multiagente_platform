@@ -4,13 +4,13 @@ Cuándo el piloto técnico-operativo del sprint se considera **cumplido**. Disti
 
 ## Hecho técnico-operativo (lab HubSpot)
 
-- [ ] Canal simulado ingestando a HubSpot con origen visible (`lead_origen`).
+- [x] Canal simulado ingestando a HubSpot con origen visible (`lead_origen`).
 - [ ] ≥ 95 % de leads del periodo con responsable asignado según regla (o excepción documentada).
 - [ ] ≥ 95 % de asignados con siguiente acción registrada.
-- [ ] SLA definido y medible; rupturas visibles en panel/métricas.
-- [ ] Duplicados del caso de prueba no crean dos dueños.
-- [ ] Datos insuficientes terminan en cola `DATOS_INSUFICIENTES`, no en silencio.
-- [ ] Baseline y métricas post documentadas ([06-metricas.md](06-metricas.md)).
+- [x] SLA definido y medible; rupturas visibles en panel/métricas (KPI `sla_rotos`, SLA vencido en tabla, registro de 1ª respuesta desde panel).
+- [x] Duplicados del caso de prueba no crean dos dueños (email/teléfono/origen+origen_ref).
+- [x] Datos insuficientes terminan en cola `DATOS_INSUFICIENTES`, no en silencio.
+- [x] Baseline y métricas post documentadas ([06-metricas.md](06-metricas.md)).
 - [ ] Manual de ownership entregado (o borrador para lab).
 - [x] API HubSpot + props custom operativas ([08-prueba-tecnica-hubspot.md](08-prueba-tecnica-hubspot.md)).
 - [x] 3 casos operativos ejecutados y documentados (nuevo, duplicado, insuficiente) — [08-prueba-tecnica-hubspot.md](08-prueba-tecnica-hubspot.md) 2026-08-26

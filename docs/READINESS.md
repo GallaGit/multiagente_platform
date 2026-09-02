@@ -4,7 +4,7 @@ Veredicto explícito de qué está listo **hoy** con este repositorio y qué req
 
 | Listo para | Estado |
 |------------|--------|
-| **Demo interna / laboratorio HubSpot** | Sí — orquestación, 3 casos, panel, KPIs con filtro MVP y baseline |
+| **Demo interna / laboratorio HubSpot** | Sí — orquestación, 3 casos, panel endurecido (1ª respuesta, SLA_ROTO, dedupe origen_ref), KPIs con filtro MVP y baseline |
 | **Discovery comercial** (entrevistas, mostrar panel) | Sí — con guion y límites ([checklist discovery](nichos/inmobiliaria/operacion/CHECKLIST-discovery-90d.md)) |
 | **Piloto pagado en CRM del cliente** | No automático — implantación aparte, contrato, acceso ([checklist piloto](nichos/inmobiliaria/operacion/CHECKLIST-piloto-pagado.md)) |
 | **Producción SaaS / clientes reales en este repo** | **No** — sin auth, sin deploy, canal simulado, SSL dev |
@@ -31,8 +31,8 @@ Veredicto explícito de qué está listo **hoy** con este repositorio y qué req
 ## Lab HubSpot — capacidades actuales
 
 - Ingesta simulada portal → contacto HubSpot con owner, SLA, siguiente acción
-- Dedupe por email/teléfono, excepción `DATOS_INSUFICIENTES`
-- Panel `/` con KPIs, tabla, cola excepciones
+- Dedupe por email/teléfono/origen+origen_ref, excepción `DATOS_INSUFICIENTES`
+- Panel `/` con KPIs, tabla (marcar 1ª respuesta, SLA vencido), cola excepciones (`SLA_ROTO` en lectura)
 - Métricas solo leads MVP (`lead_origen`) por defecto
 - Snapshot baseline local (`data/baseline.json`) y comparación en panel
 - Prueba técnica documentada: [08-prueba-tecnica-hubspot.md](nichos/inmobiliaria/mvp/08-prueba-tecnica-hubspot.md)

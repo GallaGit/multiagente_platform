@@ -3,6 +3,8 @@ import type { LeadMetrics, MetricsDashboard } from "../../lib/api";
 interface KpiGridProps {
   dashboard: MetricsDashboard | undefined;
   loading: boolean;
+  onCaptureBaseline?: () => void;
+  capturePending?: boolean;
 }
 
 type CardKey =
@@ -115,11 +117,34 @@ function deltaTone(key: CardKey, delta?: MetricsDashboard["delta"]) {
   return "text-slate-400";
 }
 
-export function KpiGrid({ dashboard, loading }: KpiGridProps) {
+export function KpiGrid({
+  dashboard,
+  loading,
+  onCaptureBaseline,
+  capturePending = false,
+}: KpiGridProps) {
   const metrics = dashboard?.current;
+  const showBaselineHint = !loading && dashboard && !dashboard.baseline;
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
+    <div className="space-y-3">
+      {showBaselineHint && onCaptureBaseline && (
+        <div className="glass flex flex-wrap items-center justify-between gap-3 border-cyan-400/20 p-4 text-sm text-slate-300">
+          <p>
+            Sin baseline capturado. Usa el botón para guardar el día 0 y ver
+            deltas en los KPIs.
+          </p>
+          <button
+            type="button"
+            className="glass-btn-ghost text-xs"
+            disabled={capturePending}
+            onClick={onCaptureBaseline}
+          >
+            {capturePending ? "Capturando…" : "Capturar baseline"}
+          </button>
+        </div>
+      )}
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
       {cards.map((card) => {
         const deltaLabel = formatDelta(card.key, dashboard?.delta);
         return (
@@ -138,6 +163,7 @@ export function KpiGrid({ dashboard, loading }: KpiGridProps) {
           </div>
         );
       })}
+      </div>
     </div>
   );
 }

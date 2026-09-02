@@ -35,7 +35,7 @@ En el laboratorio de este repo, las métricas del panel usan por defecto **solo 
 1. **Día 0** — Con API y panel en marcha, capturar baseline:
    - Panel: botón **Capturar baseline**, o
    - API: `POST /leads/baseline` con body opcional `{"note":"Lab día 0","mvp_only":true}`
-2. **Operar 1–2 semanas** — Ingesta simulada, resolución de excepciones, registrar `primera_respuesta_at` cuando aplique (PATCH lead).
+2. **Operar 1–2 semanas** — Ingesta simulada, resolución de excepciones, registrar `primera_respuesta_at` cuando aplique (botón **Marcar 1ª respuesta** en la tabla del panel o `PATCH /leads/{id}`).
 3. **Comparar** — Panel muestra delta vs baseline en cada KPI; API: `GET /leads/metrics?mvp_only=true` devuelve `{ current, baseline, delta }`.
 4. **Archivo local** — Snapshot en `data/baseline.json` (gitignored). Plantilla: `data/baseline.example.json`.
 

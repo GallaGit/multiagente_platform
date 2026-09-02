@@ -36,6 +36,12 @@ export function LeadsPage() {
   const error =
     metricsQuery.error ?? leadsQuery.error ?? exceptionsQuery.error;
 
+  function retryQueries() {
+    void metricsQuery.refetch();
+    void leadsQuery.refetch();
+    void exceptionsQuery.refetch();
+  }
+
   const baselineCapturedAt = metricsQuery.data?.baseline?.captured_at;
 
   return (
@@ -93,8 +99,18 @@ export function LeadsPage() {
 
       {error && (
         <div className="glass border-rose-400/30 p-4 text-sm text-rose-200">
-          {(error as Error).message}. Revisa HUBSPOT_ACCESS_TOKEN en .env y
-          ejecuta <code className="text-rose-100">python -m api.hubspot_setup</code>.
+          <p>
+            {(error as Error).message}. Revisa HUBSPOT_ACCESS_TOKEN en .env y
+            ejecuta{" "}
+            <code className="text-rose-100">python -m api.hubspot_setup</code>.
+          </p>
+          <button
+            type="button"
+            onClick={retryQueries}
+            className="glass-btn-ghost mt-3 text-xs"
+          >
+            Reintentar carga
+          </button>
         </div>
       )}
 
@@ -107,6 +123,8 @@ export function LeadsPage() {
       <KpiGrid
         dashboard={metricsQuery.data}
         loading={metricsQuery.isLoading}
+        onCaptureBaseline={() => captureBaseline.mutate()}
+        capturePending={captureBaseline.isPending}
       />
 
       <div className="grid gap-6 xl:grid-cols-3">

@@ -20,7 +20,7 @@ En **entrega cliente** (Witei/Inmovilla) equivalentes vía reglas nativas del CR
 | 3. `origen` + `origen_ref` | Match de evento |
 
 - Si match: actualizar registro existente; conservar `hubspot_owner_id` existente; no crear segundo responsable.
-- Implementación: `HubSpotClient.find_existing_contact` + `update_contact`.
+- Implementación: `HubSpotClient.find_existing_contact` (email → teléfono → `origen`+`origen_ref`) + `update_contact`.
 
 ## 3. Reparto (dueño)
 
@@ -39,7 +39,7 @@ En **entrega cliente** (Witei/Inmovilla) equivalentes vía reglas nativas del CR
 | Primera respuesta / intento registrado | `SLA_MINUTES` en `.env` (default 60) |
 | Sin dueño tras alta | No aplica si round-robin asigna en ingest |
 
-Incumplimiento → visible en métricas / cola; escalado manual en MVP.
+Incumplimiento → visible en métricas (`sla_rotos`), cola (`SLA_ROTO` en lectura) y tabla del panel; escalado manual en MVP.
 
 ## 5. Siguiente acción
 
@@ -58,7 +58,7 @@ Sin siguiente acción → tratar como excepción operativa.
 
 ## 7. Cola humana
 
-`GET /leads/exceptions` — contactos con `lead_estado=excepcion` o `exception_code` presente.  
+`GET /leads/exceptions` — contactos con `lead_estado=excepcion` **o** `exception_code` presente (incl. `SLA_ROTO` en lectura).  
 Panel `/` muestra cola. Nadie cierra excepción sin dejar resultado o nueva siguiente acción.
 
 ## 8. Lo que no hacen las reglas

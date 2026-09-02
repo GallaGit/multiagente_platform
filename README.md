@@ -68,6 +68,7 @@ HUBSPOT_ACCESS_TOKEN=pat-eu1-...
 HUBSPOT_PORTAL_ID=              # opcional
 HUBSPOT_VERIFY_SSL=true         # false en Windows si falla SSL local
 SLA_MINUTES=60
+ROUND_ROBIN_OWNER_IDS=          # IDs HubSpot separados por coma; vacío = todos los owners
 ```
 
 ### Configurar HubSpot
@@ -140,6 +141,8 @@ Mismos URLs que con Compose. Evita dejar varias instancias de uvicorn en el puer
 1. **Lead nuevo** — email + teléfono → contacto asignado (+ tarea si hay scope).
 2. **Duplicado** — mismo email → update, mismo owner.
 3. **Datos insuficientes** — solo nombre → excepción `DATOS_INSUFICIENTES`.
+
+En el panel, el formulario de ingesta exige **email o teléfono** antes de enviar; tras un ingest correcto muestra el tipo de resultado (`Lead nuevo` / `Duplicado` / `Excepción`) y limpia el formulario.
 
 ## API de leads (resumen)
 

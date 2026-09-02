@@ -147,7 +147,12 @@ def ingest_lead(
             message="Lead sin email ni telefono — cola de excepcion",
         )
 
-    existing = hubspot.find_existing_contact(email, phone)
+    existing = hubspot.find_existing_contact(
+        email,
+        phone,
+        payload.origen,
+        payload.origen_ref,
+    )
     sla_at = _sla_deadline(settings.sla_minutes)
     siguiente = _default_siguiente_accion(payload.mensaje)
 
@@ -268,6 +273,25 @@ def _owners_map(client: HubSpotClient) -> dict[str, OwnerResponse]:
     return {owner.id: owner for owner in client.list_owners()}
 
 
+def enrich_lead_operational(lead: LeadResponse) -> LeadResponse:
+    """Surface SLA ruptures in API reads without overwriting other exceptions."""
+    now = _utcnow()
+    sla_broken = (
+        lead.sla_primera_respuesta_at
+        and lead.sla_primera_respuesta_at < now
+        and not lead.primera_respuesta_at
+        and lead.estado != LeadEstado.CERRADO_CORTO
+    )
+    if not sla_broken:
+        return lead
+    if lead.estado == LeadEstado.EXCEPCION and lead.exception_code:
+        if lead.exception_code != ExceptionCode.SLA_ROTO.value:
+            return lead
+    return lead.model_copy(
+        update={"exception_code": ExceptionCode.SLA_ROTO.value}
+    )
+
+
 def list_leads(
     client: HubSpotClient | None = None,
     *,
@@ -285,7 +309,9 @@ def list_leads(
     )
     owners = _owners_map(hubspot)
     leads = [
-        hubspot.contact_to_lead(contact, owners_map=owners)
+        enrich_lead_operational(
+            hubspot.contact_to_lead(contact, owners_map=owners)
+        )
         for contact in contacts
     ]
     leads.sort(
@@ -300,11 +326,7 @@ def list_exceptions(
     *,
     mvp_only: bool = True,
 ) -> list[LeadResponse]:
-    leads = list_leads(
-        client,
-        estado=LeadEstado.EXCEPCION.value,
-        mvp_only=mvp_only,
-    )
+    leads = list_leads(client, mvp_only=mvp_only)
     return [lead for lead in leads if lead.exception_code]
 
 

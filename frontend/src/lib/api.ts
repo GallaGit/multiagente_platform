@@ -78,6 +78,14 @@ export interface LeadIngestPayload {
   mensaje?: string;
 }
 
+export interface LeadUpdatePayload {
+  estado?: LeadEstado;
+  exception_code?: string;
+  primera_respuesta_at?: string;
+  siguiente_accion?: string;
+  responsable_id?: string;
+}
+
 export interface ChatResponse {
   routed_to: string;
   documentation: string;
@@ -142,6 +150,18 @@ export const api = {
         estado: "asignado",
         exception_code: "",
         siguiente_accion: "Revisar y contactar manualmente",
+      }),
+    }),
+  updateLead: (leadId: string, payload: LeadUpdatePayload) =>
+    request<Lead>(`/leads/${leadId}`, {
+      method: "PATCH",
+      body: JSON.stringify(payload),
+    }),
+  markFirstResponse: (leadId: string) =>
+    request<Lead>(`/leads/${leadId}`, {
+      method: "PATCH",
+      body: JSON.stringify({
+        primera_respuesta_at: new Date().toISOString(),
       }),
     }),
   chat: (message: string) =>

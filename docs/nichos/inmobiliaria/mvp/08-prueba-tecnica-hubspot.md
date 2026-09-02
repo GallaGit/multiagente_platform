@@ -110,6 +110,16 @@ Ejemplo Caso 1 (email único): `ana.new.3d74424b@example.com` → contacto `8485
 - El lab valida **lógica de orquestación** (registro → owner → SLA → excepción → métrica), no el parseo Smart Inbox.
 - En piloto pagado el conector apunta al CRM del cliente — ver [08-prueba-tecnica-witei.md](08-prueba-tecnica-witei.md).
 
+## Endurecimiento lab (2026-09-01)
+
+| Capacidad | Verificación |
+|---|---|
+| Ingesta con feedback en panel | Formulario valida email/teléfono; muestra created/duplicate/exception |
+| 1ª respuesta desde panel | Botón **Marcar 1ª respuesta** en tabla → `PATCH /leads/{id}` |
+| SLA vencido visible | Texto en rojo en tabla; `SLA_ROTO` en cola excepciones (lectura) |
+| Dedupe `origen`+`origen_ref` | Tercera prioridad en `find_existing_contact` |
+| Tests automatizados | `pytest tests/test_leads_orchestrator.py` (dedupe, round-robin, SLA, PATCH) |
+
 ## Siguiente
 
 1. ~~Documentar baseline en [06-metricas.md](06-metricas.md).~~
